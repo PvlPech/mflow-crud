@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+                            http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+    <changeSet author="pvlpech" id="0.1.1-02-51" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <sequenceExists sequenceName="groups_seq"/>
+            </not>
+        </preConditions>
+        <createSequence cycle="false"
+                        incrementBy="1"
+                        sequenceName="groups_seq"
+                        startValue="1"/>
+        <rollback>
+            <dropSequence sequenceName="groups_seq"/>
+        </rollback>
+    </changeSet>
+    <changeSet author="pvlpech" id="0.1.1-02-52" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="groups"/>
+            </not>
+        </preConditions>
+        <createTable tableName="groups">
+            <column name="id" type="bigint" defaultValueComputed="nextval('groups_seq')">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column  name="owner_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="groups"/>
+        </rollback>
+    </changeSet>
+    <changeSet author="pvlpech" id="0.1.1-02-53" runOnChange="true">
+        <preConditions onFail="HALT">
+            <and>
+                <tableExists tableName="groups"/>
+                <tableExists tableName="users"/>
+                <columnExists tableName="groups"
+                              columnName="owner_id"/>
+                <columnExists tableName="users"
+                              columnName="id"/>
+                <not>
+                    <foreignKeyConstraintExists foreignKeyTableName="groups"
+                                                foreignKeyName="groups_owner_id_fkey"/>
+                </not>
+            </and>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="owner_id"
+                                 baseTableName="groups"
+                                 onDelete="CASCADE"
+                                 onUpdate="CASCADE"
+                                 referencedColumnNames="id"
+                                 referencedTableName="users"
+                                 constraintName="groups_owner_id_fkey"/>
+        <rollback>
+            <dropForeignKeyConstraint baseTableName="groups"
+                                      constraintName="groups_owner_id_fkey"/>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>

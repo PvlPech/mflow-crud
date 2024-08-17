@@ -1,0 +1,835 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+                            http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+    <changeSet author="pvlpech" id="0.1.1-01-01" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="currencies"/>
+            </not>
+        </preConditions>
+        <createTable tableName="currencies">
+            <column name="id" type="bigint">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="code" type="varchar(4)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="varchar(250)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="currencies"/>
+        </rollback>
+    </changeSet>
+    <changeSet author="pvlpech" id="0.1.1-01-02" runOnChange="true">
+        <insert tableName="currencies">
+            <column name="id" value="784"/>
+            <column name="code" value="AED"/>
+            <column name="name" value="Дирхам (ОАЭ)"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="971"/>
+            <column name="code" value="AFN"/>
+            <column name="name" value="Афгани"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="008"/>
+            <column name="code" value="ALL"/>
+            <column name="name" value="Лек"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="174"/>
+            <column name="code" value="KMF"/>
+            <column name="name" value="Коморский франк"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="051"/>
+            <column name="code" value="AMD"/>
+            <column name="name" value="Армянский драм"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="532"/>
+            <column name="code" value="ANG"/>
+            <column name="name" value="Нидерландский антильский гульден"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="973"/>
+            <column name="code" value="AOA"/>
+            <column name="name" value="Кванза"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="032"/>
+            <column name="code" value="ARS"/>
+            <column name="name" value="Аргентинское песо"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="036"/>
+            <column name="code" value="AUD"/>
+            <column name="name" value="Австралийский доллар"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="533"/>
+            <column name="code" value="AWG"/>
+            <column name="name" value="Арубанский флорин"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="944"/>
+            <column name="code" value="AZN"/>
+            <column name="name" value="Азербайджанский манат"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="977"/>
+            <column name="code" value="BAM"/>
+            <column name="name" value="Конвертируемая марка"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="052"/>
+            <column name="code" value="BBD"/>
+            <column name="name" value="Барбадосский доллар"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="050"/>
+            <column name="code" value="BDT"/>
+            <column name="name" value="Така"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="975"/>
+            <column name="code" value="BGN"/>
+            <column name="name" value="Болгарский лев"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="048"/>
+            <column name="code" value="BHD"/>
+            <column name="name" value="Бахрейнский динар"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="108"/>
+            <column name="code" value="BIF"/>
+            <column name="name" value="Бурундийский франк"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="060"/>
+            <column name="code" value="BMD"/>
+            <column name="name" value="Бермудский доллар"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="096"/>
+            <column name="code" value="BND"/>
+            <column name="name" value="Брунейский доллар"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="068"/>
+            <column name="code" value="BOB"/>
+            <column name="name" value="Боливиано"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="986"/>
+            <column name="code" value="BRL"/>
+            <column name="name" value="Бразильский реал"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="044"/>
+            <column name="code" value="BSD"/>
+            <column name="name" value="Багамский доллар"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="064"/>
+            <column name="code" value="BTN"/>
+            <column name="name" value="Нгултрум"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="072"/>
+            <column name="code" value="BWP"/>
+            <column name="name" value="Пула"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="933"/>
+            <column name="code" value="BYN"/>
+            <column name="name" value="Белорусский рубль"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="084"/>
+            <column name="code" value="BZD"/>
+            <column name="name" value="Белизский доллар"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="124"/>
+            <column name="code" value="CAD"/>
+            <column name="name" value="Канадский доллар"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="976"/>
+            <column name="code" value="CDF"/>
+            <column name="name" value="Конголезский франк"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="756"/>
+            <column name="code" value="CHF"/>
+            <column name="name" value="Швейцарский франк"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="152"/>
+            <column name="code" value="CLP"/>
+            <column name="name" value="Чилийское песо"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="156"/>
+            <column name="code" value="CNY"/>
+            <column name="name" value="Юань"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="170"/>
+            <column name="code" value="COP"/>
+            <column name="name" value="Колумбийское песо"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="970"/>
+            <column name="code" value="COU"/>
+            <column name="name" value="Единица реальной стоимости"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="188"/>
+            <column name="code" value="CRC"/>
+            <column name="name" value="Костариканский колон"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="931"/>
+            <column name="code" value="CUC"/>
+            <column name="name" value="Конвертируемое песо"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="192"/>
+            <column name="code" value="CUP"/>
+            <column name="name" value="Кубинское песо"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="132"/>
+            <column name="code" value="CVE"/>
+            <column name="name" value="Эскудо Кабо-Верде"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="203"/>
+            <column name="code" value="CZK"/>
+            <column name="name" value="Чешская крона"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="262"/>
+            <column name="code" value="DJF"/>
+            <column name="name" value="Франк Джибути"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="208"/>
+            <column name="code" value="DKK"/>
+            <column name="name" value="Датская крона"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="214"/>
+            <column name="code" value="DOP"/>
+            <column name="name" value="Доминиканское песо"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="012"/>
+            <column name="code" value="DZD"/>
+            <column name="name" value="Алжирский динар"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="418"/>
+            <column name="code" value="LAK"/>
+            <column name="name" value="Лаосский кип"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="928"/>
+            <column name="code" value="VES"/>
+            <column name="name" value="Боливар Соберано"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="929"/>
+            <column name="code" value="MRU"/>
+            <column name="name" value="Угия"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="930"/>
+            <column name="code" value="STN"/>
+            <column name="name" value="Добра"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="818"/>
+            <column name="code" value="EGP"/>
+            <column name="name" value="Египетский фунт"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="232"/>
+            <column name="code" value="ERN"/>
+            <column name="name" value="Накфа"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="230"/>
+            <column name="code" value="ETB"/>
+            <column name="name" value="Эфиопский быр"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="978"/>
+            <column name="code" value="EUR"/>
+            <column name="name" value="Евро"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="242"/>
+            <column name="code" value="FJD"/>
+            <column name="name" value="Доллар Фиджи"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="238"/>
+            <column name="code" value="FKP"/>
+            <column name="name" value="Фунт Фолклендских островов"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="826"/>
+            <column name="code" value="GBP"/>
+            <column name="name" value="Фунт стерлингов"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="981"/>
+            <column name="code" value="GEL"/>
+            <column name="name" value="Лари"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="936"/>
+            <column name="code" value="GHS"/>
+            <column name="name" value="Ганский седи"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="292"/>
+            <column name="code" value="GIP"/>
+            <column name="name" value="Гибралтарский фунт"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="270"/>
+            <column name="code" value="GMD"/>
+            <column name="name" value="Даласи"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="324"/>
+            <column name="code" value="GNF"/>
+            <column name="name" value="Гвинейский франк"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="320"/>
+            <column name="code" value="GTQ"/>
+            <column name="name" value="Кетсаль"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="328"/>
+            <column name="code" value="GYD"/>
+            <column name="name" value="Гайанский доллар"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="344"/>
+            <column name="code" value="HKD"/>
+            <column name="name" value="Гонконгский доллар"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="340"/>
+            <column name="code" value="HNL"/>
+            <column name="name" value="Лемпира"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="191"/>
+            <column name="code" value="HRK"/>
+            <column name="name" value="Куна"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="332"/>
+            <column name="code" value="HTG"/>
+            <column name="name" value="Гурд"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="348"/>
+            <column name="code" value="HUF"/>
+            <column name="name" value="Форинт"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="360"/>
+            <column name="code" value="IDR"/>
+            <column name="name" value="Рупия"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="376"/>
+            <column name="code" value="ILS"/>
+            <column name="name" value="Новый израильский шекель"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="356"/>
+            <column name="code" value="INR"/>
+            <column name="name" value="Индийская рупия"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="368"/>
+            <column name="code" value="IQD"/>
+            <column name="name" value="Иракский динар"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="364"/>
+            <column name="code" value="IRR"/>
+            <column name="name" value="Иранский риал"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="352"/>
+            <column name="code" value="ISK"/>
+            <column name="name" value="Исландская крона"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="388"/>
+            <column name="code" value="JMD"/>
+            <column name="name" value="Ямайский доллар"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="400"/>
+            <column name="code" value="JOD"/>
+            <column name="name" value="Иорданский динар"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="392"/>
+            <column name="code" value="JPY"/>
+            <column name="name" value="Иена"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="404"/>
+            <column name="code" value="KES"/>
+            <column name="name" value="Кенийский шиллинг"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="417"/>
+            <column name="code" value="KGS"/>
+            <column name="name" value="Сом"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="116"/>
+            <column name="code" value="KHR"/>
+            <column name="name" value="Риель"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="408"/>
+            <column name="code" value="KPW"/>
+            <column name="name" value="Северокорейская вона"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="410"/>
+            <column name="code" value="KRW"/>
+            <column name="name" value="Вона"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="414"/>
+            <column name="code" value="KWD"/>
+            <column name="name" value="Кувейтский динар"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="136"/>
+            <column name="code" value="KYD"/>
+            <column name="name" value="Доллар Островов Кайман"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="398"/>
+            <column name="code" value="KZT"/>
+            <column name="name" value="Тенге"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="422"/>
+            <column name="code" value="LBP"/>
+            <column name="name" value="Ливанский фунт"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="144"/>
+            <column name="code" value="LKR"/>
+            <column name="name" value="Шри-Ланкийская рупия"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="430"/>
+            <column name="code" value="LRD"/>
+            <column name="name" value="Либерийский доллар"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="426"/>
+            <column name="code" value="LSL"/>
+            <column name="name" value="Лоти"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="434"/>
+            <column name="code" value="LYD"/>
+            <column name="name" value="Ливийский динар"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="504"/>
+            <column name="code" value="MAD"/>
+            <column name="name" value="Марокканский дирхам"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="498"/>
+            <column name="code" value="MDL"/>
+            <column name="name" value="Молдавский лей"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="969"/>
+            <column name="code" value="MGA"/>
+            <column name="name" value="Малагасийский ариари"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="807"/>
+            <column name="code" value="MKD"/>
+            <column name="name" value="Денар"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="104"/>
+            <column name="code" value="MMK"/>
+            <column name="name" value="Кьят"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="496"/>
+            <column name="code" value="MNT"/>
+            <column name="name" value="Тугрик"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="446"/>
+            <column name="code" value="MOP"/>
+            <column name="name" value="Патака"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="480"/>
+            <column name="code" value="MUR"/>
+            <column name="name" value="Маврикийская рупия"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="462"/>
+            <column name="code" value="MVR"/>
+            <column name="name" value="Руфия"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="454"/>
+            <column name="code" value="MWK"/>
+            <column name="name" value="Малавийская квача"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="484"/>
+            <column name="code" value="MXN"/>
+            <column name="name" value="Мексиканское песо"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="458"/>
+            <column name="code" value="MYR"/>
+            <column name="name" value="Малайзийский ринггит"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="943"/>
+            <column name="code" value="MZN"/>
+            <column name="name" value="Мозамбикский метикал"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="516"/>
+            <column name="code" value="NAD"/>
+            <column name="name" value="Доллар Намибии"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="566"/>
+            <column name="code" value="NGN"/>
+            <column name="name" value="Найра"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="558"/>
+            <column name="code" value="NIO"/>
+            <column name="name" value="Золотая кордоба"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="578"/>
+            <column name="code" value="NOK"/>
+            <column name="name" value="Норвежская крона"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="524"/>
+            <column name="code" value="NPR"/>
+            <column name="name" value="Непальская рупия"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="554"/>
+            <column name="code" value="NZD"/>
+            <column name="name" value="Новозеландский доллар"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="512"/>
+            <column name="code" value="OMR"/>
+            <column name="name" value="Оманский риал"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="590"/>
+            <column name="code" value="PAB"/>
+            <column name="name" value="Бальбоа"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="604"/>
+            <column name="code" value="PEN"/>
+            <column name="name" value="Соль"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="598"/>
+            <column name="code" value="PGK"/>
+            <column name="name" value="Кина"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="608"/>
+            <column name="code" value="PHP"/>
+            <column name="name" value="Филиппинское песо"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="586"/>
+            <column name="code" value="PKR"/>
+            <column name="name" value="Пакистанская рупия"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="985"/>
+            <column name="code" value="PLN"/>
+            <column name="name" value="Злотый"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="600"/>
+            <column name="code" value="PYG"/>
+            <column name="name" value="Гуарани"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="634"/>
+            <column name="code" value="QAR"/>
+            <column name="name" value="Катарский риал"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="946"/>
+            <column name="code" value="RON"/>
+            <column name="name" value="Румынский лей"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="941"/>
+            <column name="code" value="RSD"/>
+            <column name="name" value="Сербский динар"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="643"/>
+            <column name="code" value="RUB"/>
+            <column name="name" value="Российский рубль"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="646"/>
+            <column name="code" value="RWF"/>
+            <column name="name" value="Франк Руанды"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="682"/>
+            <column name="code" value="SAR"/>
+            <column name="name" value="Саудовский риял"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="090"/>
+            <column name="code" value="SBD"/>
+            <column name="name" value="Доллар Соломоновых Островов"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="690"/>
+            <column name="code" value="SCR"/>
+            <column name="name" value="Сейшельская рупия"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="938"/>
+            <column name="code" value="SDG"/>
+            <column name="name" value="Суданский фунт"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="752"/>
+            <column name="code" value="SEK"/>
+            <column name="name" value="Шведская крона"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="702"/>
+            <column name="code" value="SGD"/>
+            <column name="name" value="Сингапурский доллар"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="654"/>
+            <column name="code" value="SHP"/>
+            <column name="name" value="Фунт Святой Елены"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="694"/>
+            <column name="code" value="SLL"/>
+            <column name="name" value="Леоне"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="706"/>
+            <column name="code" value="SOS"/>
+            <column name="name" value="Сомалийский шиллинг"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="968"/>
+            <column name="code" value="SRD"/>
+            <column name="name" value="Суринамский доллар"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="728"/>
+            <column name="code" value="SSP"/>
+            <column name="name" value="Южносуданский фунт"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="222"/>
+            <column name="code" value="SVC"/>
+            <column name="name" value="Сальвадорский колон"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="760"/>
+            <column name="code" value="SYP"/>
+            <column name="name" value="Сирийский фунт"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="748"/>
+            <column name="code" value="SZL"/>
+            <column name="name" value="Лилангени"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="764"/>
+            <column name="code" value="THB"/>
+            <column name="name" value="Бат"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="972"/>
+            <column name="code" value="TJS"/>
+            <column name="name" value="Сомони"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="934"/>
+            <column name="code" value="TMT"/>
+            <column name="name" value="Новый туркменский манат"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="788"/>
+            <column name="code" value="TND"/>
+            <column name="name" value="Тунисский динар"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="776"/>
+            <column name="code" value="TOP"/>
+            <column name="name" value="Паанга"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="949"/>
+            <column name="code" value="TRY"/>
+            <column name="name" value="Турецкая лира"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="780"/>
+            <column name="code" value="TTD"/>
+            <column name="name" value="Доллар Тринидада и Тобаго"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="901"/>
+            <column name="code" value="TWD"/>
+            <column name="name" value="Новый тайваньский доллар"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="834"/>
+            <column name="code" value="TZS"/>
+            <column name="name" value="Танзанийский шиллинг"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="980"/>
+            <column name="code" value="UAH"/>
+            <column name="name" value="Гривна"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="800"/>
+            <column name="code" value="UGX"/>
+            <column name="name" value="Угандийский шиллинг"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="840"/>
+            <column name="code" value="USD"/>
+            <column name="name" value="Доллар США"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="940"/>
+            <column name="code" value="UYI"/>
+            <column name="name" value="Уругвайское песо в индексированных единицах"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="858"/>
+            <column name="code" value="UYU"/>
+            <column name="name" value="Уругвайское песо"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="860"/>
+            <column name="code" value="UZS"/>
+            <column name="name" value="Узбекский сум"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="704"/>
+            <column name="code" value="VND"/>
+            <column name="name" value="Донг"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="548"/>
+            <column name="code" value="VUV"/>
+            <column name="name" value="Вату"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="882"/>
+            <column name="code" value="WST"/>
+            <column name="name" value="Тала"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="950"/>
+            <column name="code" value="XAF"/>
+            <column name="name" value="Франк КФА ВЕАС"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="951"/>
+            <column name="code" value="XCD"/>
+            <column name="name" value="Восточно-карибский доллар"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="960"/>
+            <column name="code" value="XDR"/>
+            <column name="name" value="СДР (специальные права заимствования)"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="952"/>
+            <column name="code" value="XOF"/>
+            <column name="name" value="Франк КФА ВСЕАО"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="953"/>
+            <column name="code" value="XPF"/>
+            <column name="name" value="Франк КФП"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="886"/>
+            <column name="code" value="YER"/>
+            <column name="name" value="Йеменский риал"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="710"/>
+            <column name="code" value="ZAR"/>
+            <column name="name" value="Рэнд"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="967"/>
+            <column name="code" value="ZMW"/>
+            <column name="name" value="Замбийская квача"/>
+        </insert>
+        <insert tableName="currencies">
+            <column name="id" value="932"/>
+            <column name="code" value="ZWL"/>
+            <column name="name" value="Доллар Зимбабве"/>
+        </insert>
+        <rollback>
+            <delete tableName="currencies" />
+        </rollback>
+    </changeSet>
+</databaseChangeLog>

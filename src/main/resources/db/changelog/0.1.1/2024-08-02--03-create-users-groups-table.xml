@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+                            http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+    <changeSet author="pvlpech" id="0.1.1-03-51" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="users_groups"/>
+            </not>
+        </preConditions>
+        <createTable tableName="users_groups">
+            <column name="user_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="group_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="users_groups"/>
+        </rollback>
+    </changeSet>
+    <changeSet author="pvlpech" id="0.1.1-03-52" runOnChange="true">
+        <preConditions onFail="HALT">
+            <and>
+                <tableExists tableName="users_groups"/>
+                <columnExists tableName="users_groups"
+                              columnName="user_id"/>
+                <columnExists tableName="users_groups"
+                              columnName="group_id"/>
+                <not>
+                    <primaryKeyExists primaryKeyName="users_groups_pkey"
+                                      tableName="users_groups"/>
+                </not>
+            </and>
+        </preConditions>
+        <addPrimaryKey tableName="users_groups"
+                       columnNames="user_id, group_id"
+                       constraintName="users_groups_pkey"/>
+        <rollback>
+            <dropPrimaryKey tableName="users_groups"
+                            constraintName="users_groups_pkey"/>
+        </rollback>
+    </changeSet>
+    <changeSet author="pvlpech" id="0.1.1-02-53" runOnChange="true">
+        <preConditions onFail="HALT">
+            <and>
+                <tableExists tableName="groups"/>
+                <columnExists tableName="groups"
+                              columnName="id"/>
+                <not>
+                    <foreignKeyConstraintExists foreignKeyTableName="users_groups"
+                                                foreignKeyName="users_groups_group_id_fkey"/>
+                </not>
+            </and>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="group_id"
+                                 baseTableName="users_groups"
+                                 onDelete="CASCADE"
+                                 onUpdate="CASCADE"
+                                 referencedColumnNames="id"
+                                 referencedTableName="groups"
+                                 constraintName="users_groups_group_id_fkey"/>
+        <rollback>
+            <dropForeignKeyConstraint baseTableName="users_groups"
+                                      constraintName="users_groups_group_id_fkey"/>
+        </rollback>
+    </changeSet>
+    <changeSet author="pvlpech" id="0.1.1-02-54" runOnChange="true">
+        <preConditions onFail="HALT">
+            <and>
+                <tableExists tableName="users"/>
+                <columnExists tableName="users"
+                              columnName="id"/>
+                <not>
+                    <foreignKeyConstraintExists foreignKeyTableName="users_groups"
+                                                foreignKeyName="users_groups_user_id_fkey"/>
+                </not>
+            </and>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="user_id"
+                                 baseTableName="users_groups"
+                                 onDelete="CASCADE"
+                                 onUpdate="CASCADE"
+                                 referencedColumnNames="id"
+                                 referencedTableName="users"
+                                 constraintName="users_groups_user_id_fkey"/>
+        <rollback>
+            <dropForeignKeyConstraint baseTableName="users_groups"
+                                      constraintName="users_groups_user_id_fkey"/>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>
