@@ -1,10 +1,13 @@
 package org.pvlpech.mflow.crud.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.quarkus.hibernate.reactive.panache.PanacheEntityBase;
-import io.smallrye.mutiny.Multi;
-import io.smallrye.mutiny.Uni;
 import jakarta.persistence.*;
-import jakarta.ws.rs.NotFoundException;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 import java.util.HashSet;
@@ -13,79 +16,105 @@ import java.util.Set;
 @Entity
 @Table(name = "users")
 @ToString
+@Setter
+@Getter
 public class User extends PanacheEntityBase {
 
     @Id
     @SequenceGenerator(name = "userSequence", sequenceName = "users_seq", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "userSequence")
-    public Long id;
+    private Long id;
 
     @Column(length = 250, nullable = false)
-    public String name;
+    @Size(max = 250, message = "Name must not be more than 250 characters")
+    @NotBlank(message = "Name must not be blank")
+    private String name;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany()
     @JoinTable(name = "users_groups"
-            , joinColumns = @JoinColumn(name = "user_id")
-            , inverseJoinColumns = @JoinColumn(name = "group_id")
+        , joinColumns = @JoinColumn(name = "user_id")
+        , inverseJoinColumns = @JoinColumn(name = "group_id")
     )
-    public Set<Group> groups = new HashSet<>();
+    @JsonIgnore
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
+    private Set<Group> groups = new HashSet<>();
 
-    @OneToMany(cascade = {CascadeType.ALL}, mappedBy = "owner", fetch = FetchType.EAGER)
-    public Set<Group> servedGroups = new HashSet<>();
-
-    public void addGroup(Group group) {
-        groups.add(group);
-        group.users.add(this);
-    }
-
-    public void removeGroup(Group group) {
-        groups.remove(group);
-        group.users.remove(this);
-    }
-
-    public void cleanupAllGroup() {
-        Set<Group> groupsCopy = Set.copyOf(this.groups);
-        groupsCopy.forEach(this::removeGroup);
-    }
+    @OneToMany(cascade = {CascadeType.ALL}, mappedBy = "owner")
+    @JsonIgnore
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
+    private Set<Group> servedGroups = new HashSet<>();
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof User)) return false;
-        return id != null && id.equals(((User) o).id);
+        return getId() != null && id.equals(((User) o).getId());
     }
 
     @Override
     public int hashCode() {
         return getClass().hashCode();
     }
-
-    public Uni<User> merge(User user) {
-        Uni<User> merged = Uni.createFrom().item(this);
-        if (user == null)
-            return merged;
-
-        this.name = user.name == null ? this.name : user.name;
-        if (user.groups != null) {
-            this.groups.forEach(group -> {
-                if (!user.groups.contains(group))
-                    removeGroup(group);
-            });
-
-            merged = Multi.createFrom().iterable(user.groups)
-                    .onItem().transformToUniAndMerge(group -> {
-                        if (!this.groups.contains(group))
-                            return Group.<Group>findById(group.id)
-                                    .onItem().ifNull().failWith(new NotFoundException("Group not found with id: " + group.id))
-                                    .invoke(this::addGroup);
-                        return Uni.createFrom().voidItem();
-                    })
-                    .collect().asList()
-                    .replaceWith(this);
-        }
-
-        return merged;
-    }
+//
+//    public Uni<Set<Group>> getGroups() {
+//        return Mutiny.fetch(groups);
+//    }
+//
+//    public Uni<Void> addGroup(Group group) {
+//        return this.getGroups()
+//                .map(groups -> groups.add(group))
+//                .replaceWith(group)
+//                .flatMap(Group::getUsers)
+//                .map(users -> users.add(this))
+//                .replaceWithVoid();
+//    }
+//
+//    public Uni<Void> removeGroup(Group group) {
+//        return this.getGroups()
+//                .map(groups -> groups.remove(group))
+//                .replaceWith(group)
+//                .flatMap(Group::getUsers)
+//                .map(users -> users.remove(this))
+//                .replaceWithVoid();
+//    }
+//
+//    public Uni<Set<Group>> getServedGroups() {
+//        return Mutiny.fetch(servedGroups);
+//    }
+//
+//    public Uni<Void> addServedGroup(Group group) {
+//        return this.getServedGroups()
+//                .map(servedGroups -> servedGroups.add(group))
+//                .replaceWithVoid();
+//    }
+//
+//    public Uni<Void> removeServedGroup(Group group) {
+//        return this.getServedGroups()
+//                .map(servedGroups -> servedGroups.remove(group))
+//                .replaceWithVoid();
+//    }
+//
+//    public Uni<Void> removeAllGroup() {
+//        return this.getGroups()
+//                .map(Set::copyOf)
+//                .flatMap(groupsCopy -> Uni.combine().all().unis(
+//                                groupsCopy.stream()
+//                                        .map(this::removeGroup)
+//                                        .collect(Collectors.toList())
+//                        ).discardItems()
+//                );
+//    }
+//
+//    public Uni<User> merge(User user) {
+//        return Uni.createFrom().item(this)
+//                .map(currentUser -> {
+//                    if (user == null) return currentUser;
+//                    currentUser.setName(user.getName() == null ? currentUser.getName() : user.getName());
+//                    return currentUser;
+//                });
+//    }
 
 //    public static Uni<User> findByName(String name) {
 //        return find("name", name).firstResult();
