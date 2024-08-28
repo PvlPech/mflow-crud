@@ -14,6 +14,7 @@ import org.eclipse.microprofile.openapi.annotations.media.ExampleObject;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.pvlpech.mflow.crud.model.Currency;
 import org.pvlpech.mflow.crud.service.CurrencyService;
 
@@ -23,6 +24,7 @@ import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
 @Path("/api/v1/currencies")
 @ApplicationScoped
+@Tag(name = "currencies")
 @Produces(APPLICATION_JSON)
 public class CurrencyResource {
 

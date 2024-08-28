@@ -1,16 +1,13 @@
 package org.pvlpech.mflow.crud.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.quarkus.hibernate.reactive.panache.PanacheEntityBase;
-import io.smallrye.mutiny.Uni;
 import jakarta.persistence.*;
-import jakarta.ws.rs.NotFoundException;
-import lombok.*;
-import org.hibernate.reactive.mutiny.Mutiny;
-
-import java.util.HashSet;
-import java.util.Set;
-import java.util.stream.Collectors;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Table(name = "groups")
@@ -25,11 +22,14 @@ public class Group extends PanacheEntityBase {
     private Long id;
 
     @Column(length = 50, nullable = false)
+    @Size(max = 50, message = "Name must not be more than 50 characters")
+    @NotBlank(message = "Name must not be blank")
     private String name;
 
     @ManyToOne()
     @JoinColumn(name = "owner_id", nullable = false)
     @Setter(AccessLevel.NONE)
+    @NotBlank(message = "Owner must not be blank")
     private User owner;
 
 //    @ManyToMany(mappedBy = "groups")

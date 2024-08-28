@@ -28,4 +28,26 @@ final class Examples {
         """;
 
     static final String VALID_EXAMPLE_CURRENCY_LIST = "[" + VALID_EXAMPLE_CURRENCY + "]";
+
+    static final String VALID_EXAMPLE_GROUP_TO_CREATE = """
+        {
+            "name": "Taxi",
+            "owner": {
+                "id": 1
+            }
+        }
+        """;
+
+    static final String VALID_EXAMPLE_GROUP = """
+        {
+        	"id": 1,
+            "name": "Taxi",
+            "owner": {
+              "id": 1,
+              "name": "Paul"
+            }
+        }
+        """;
+
+    static final String VALID_EXAMPLE_GROUP_LIST = "[" + VALID_EXAMPLE_GROUP + "]";
 }
