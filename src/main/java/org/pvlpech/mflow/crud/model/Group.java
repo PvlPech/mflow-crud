@@ -3,6 +3,7 @@ package org.pvlpech.mflow.crud.model;
 import io.quarkus.hibernate.reactive.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -29,7 +30,7 @@ public class Group extends PanacheEntityBase {
     @ManyToOne()
     @JoinColumn(name = "owner_id", nullable = false)
     @Setter(AccessLevel.NONE)
-    @NotBlank(message = "Owner must not be blank")
+    @NotNull(message = "Owner must not be null")
     private User owner;
 
 //    @ManyToMany(mappedBy = "groups")
