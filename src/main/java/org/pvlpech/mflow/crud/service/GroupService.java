@@ -4,6 +4,9 @@ import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.quarkus.panache.common.Sort;
 import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Validator;
 import jakarta.ws.rs.NotFoundException;
 import org.pvlpech.mflow.crud.model.Group;
 import org.pvlpech.mflow.crud.model.User;
@@ -13,14 +16,36 @@ import java.util.List;
 @ApplicationScoped
 public class GroupService {
 
-//    @WithTransaction
-//    public Uni<Group> create(Group group) {
-//        return User.<User>findById(group.getOwner().getId())
-//                .onItem().ifNull().failWith(new NotFoundException("User not found with id: " + group.getOwner().getId()))
-//                .flatMap(owner -> (new Group()).merge(group))
-//                .flatMap(newGroup -> newGroup.persist());
-//    }
-//
+    @Inject
+    Validator validator;
+
+    @WithTransaction
+    public Uni<Group> create(Group group) {
+        return Uni.createFrom().item(this.validate(group))
+            .flatMap(g -> User.<User>findById(g.getOwner().getId())
+                .onItem().ifNull().failWith(new NotFoundException("User not found with id: " + g.getOwner().getId()))
+                .flatMap(u -> u.addServedGroup(g))
+                .flatMap(u -> u.addGroup(g))
+                .flatMap(u -> g.persist())
+            );
+    }
+
+    /**
+     * Validates a {@link Group} for partial update according to annotation validation rules on the {@link Group} object.
+     * @param group The {@link Group}
+     * @return The same {@link Group} that was passed in, assuming it passes validation. The return is used as a convenience so the method can be called in a functional pipeline.
+     * @throws ConstraintViolationException If validation fails
+     */
+    private Group validate(Group group) {
+        var violations = this.validator.validate(group);
+
+        if ((violations != null) && !violations.isEmpty()) {
+            throw new ConstraintViolationException(violations);
+        }
+
+        return group;
+    }
+
 //    @WithTransaction
 //    public Uni<Group> update(Long id, Group updatedGroup) {
 //        return Group.<Group>findById(id)

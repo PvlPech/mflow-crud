@@ -1,6 +1,8 @@
 package org.pvlpech.mflow.crud.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.quarkus.hibernate.reactive.panache.PanacheEntityBase;
+import io.smallrye.mutiny.Uni;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -9,6 +11,10 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.reactive.mutiny.Mutiny;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "groups")
@@ -33,16 +39,16 @@ public class Group extends PanacheEntityBase {
     @NotNull(message = "Owner must not be null")
     private User owner;
 
-//    @ManyToMany(mappedBy = "groups")
-//    @JsonIgnore
-//    @Getter(AccessLevel.NONE)
-//    @Setter(AccessLevel.NONE)
-//    private Set<User> users = new HashSet<>();
-//
-//    public Uni<Set<User>> getUsers() {
-//        return Mutiny.fetch(this.users);
-//    }
-//
+    @ManyToMany(mappedBy = "groups")
+    @JsonIgnore
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
+    private Set<User> users = new HashSet<>();
+
+    public Uni<Set<User>> getUsers() {
+        return Mutiny.fetch(this.users);
+    }
+
 //    public Uni<Void> addUser(User user) {
 //        return this.getUsers()
 //                .map(users -> users.add(user))

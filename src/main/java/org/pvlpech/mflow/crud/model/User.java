@@ -2,6 +2,7 @@ package org.pvlpech.mflow.crud.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.quarkus.hibernate.reactive.panache.PanacheEntityBase;
+import io.smallrye.mutiny.Uni;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -9,6 +10,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.reactive.mutiny.Mutiny;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -40,7 +42,7 @@ public class User extends PanacheEntityBase {
     @Setter(AccessLevel.NONE)
     private Set<Group> groups = new HashSet<>();
 
-    @OneToMany(cascade = {CascadeType.ALL}, mappedBy = "owner")
+    @OneToMany(cascade = {CascadeType.ALL}, orphanRemoval = true, mappedBy = "owner")
     @JsonIgnore
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.NONE)
@@ -57,20 +59,20 @@ public class User extends PanacheEntityBase {
     public int hashCode() {
         return getClass().hashCode();
     }
-//
-//    public Uni<Set<Group>> getGroups() {
-//        return Mutiny.fetch(groups);
-//    }
-//
-//    public Uni<Void> addGroup(Group group) {
-//        return this.getGroups()
-//                .map(groups -> groups.add(group))
-//                .replaceWith(group)
-//                .flatMap(Group::getUsers)
-//                .map(users -> users.add(this))
-//                .replaceWithVoid();
-//    }
-//
+
+    public Uni<Set<Group>> getGroups() {
+        return Mutiny.fetch(groups);
+    }
+
+    public Uni<User> addGroup(Group group) {
+        return this.getGroups()
+                .map(gs -> gs.add(group))
+                .replaceWith(group)
+                .flatMap(Group::getUsers)
+                .map(us -> us.add(this))
+                .replaceWith(this);
+    }
+
 //    public Uni<Void> removeGroup(Group group) {
 //        return this.getGroups()
 //                .map(groups -> groups.remove(group))
@@ -80,16 +82,16 @@ public class User extends PanacheEntityBase {
 //                .replaceWithVoid();
 //    }
 //
-//    public Uni<Set<Group>> getServedGroups() {
-//        return Mutiny.fetch(servedGroups);
-//    }
-//
-//    public Uni<Void> addServedGroup(Group group) {
-//        return this.getServedGroups()
-//                .map(servedGroups -> servedGroups.add(group))
-//                .replaceWithVoid();
-//    }
-//
+    public Uni<Set<Group>> getServedGroups() {
+        return Mutiny.fetch(servedGroups);
+    }
+
+    public Uni<User> addServedGroup(Group group) {
+        return this.getServedGroups()
+                .map(gs -> gs.add(group))
+                .replaceWith(this);
+    }
+
 //    public Uni<Void> removeServedGroup(Group group) {
 //        return this.getServedGroups()
 //                .map(servedGroups -> servedGroups.remove(group))
