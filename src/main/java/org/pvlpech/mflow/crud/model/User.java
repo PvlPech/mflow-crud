@@ -32,16 +32,16 @@ public class User extends PanacheEntityBase {
     @NotBlank(message = "Name must not be blank")
     private String name;
 
-    @ManyToMany()
-    @JoinTable(name = "users_groups"
-        , joinColumns = @JoinColumn(name = "user_id")
-        , inverseJoinColumns = @JoinColumn(name = "group_id")
-    )
-    @JsonIgnore
-    @Getter(AccessLevel.NONE)
-    @Setter(AccessLevel.NONE)
-    private Set<Group> groups = new HashSet<>();
-
+//    @ManyToMany(cascade = {CascadeType.ALL})
+//    @JoinTable(name = "users_groups"
+//        , joinColumns = @JoinColumn(name = "user_id")
+//        , inverseJoinColumns = @JoinColumn(name = "group_id")
+//    )
+//    @JsonIgnore
+//    @Getter(AccessLevel.NONE)
+//    @Setter(AccessLevel.NONE)
+//    private Set<Group> groups = new HashSet<>();
+//
     @OneToMany(cascade = {CascadeType.ALL}, orphanRemoval = true, mappedBy = "owner")
     @JsonIgnore
     @Getter(AccessLevel.NONE)
@@ -60,25 +60,25 @@ public class User extends PanacheEntityBase {
         return getClass().hashCode();
     }
 
-    public Uni<Set<Group>> getGroups() {
-        return Mutiny.fetch(groups);
-    }
-
-    public Uni<User> addGroup(Group group) {
-        return this.getGroups()
-                .map(gs -> gs.add(group))
-                .replaceWith(group)
-                .flatMap(Group::getUsers)
-                .map(us -> us.add(this))
-                .replaceWith(this);
-    }
-
-//    public Uni<Void> removeGroup(Group group) {
+//    public Uni<Set<Group>> getGroups() {
+//        return Mutiny.fetch(groups);
+//    }
+//
+//    public Uni<User> addGroup(Group group) {
 //        return this.getGroups()
-//                .map(groups -> groups.remove(group))
+//                .map(gs -> gs.add(group))
 //                .replaceWith(group)
 //                .flatMap(Group::getUsers)
-//                .map(users -> users.remove(this))
+//                .map(us -> us.add(this))
+//                .replaceWith(this);
+//    }
+//
+//    public Uni<Void> deleteGroup(Group group) {
+//        return this.getGroups()
+//                .map(gs -> gs.remove(group))
+//                .replaceWith(group)
+//                .flatMap(Group::getUsers)
+//                .map(us -> us.remove(this))
 //                .replaceWithVoid();
 //    }
 //
@@ -92,12 +92,6 @@ public class User extends PanacheEntityBase {
                 .replaceWith(this);
     }
 
-//    public Uni<Void> removeServedGroup(Group group) {
-//        return this.getServedGroups()
-//                .map(servedGroups -> servedGroups.remove(group))
-//                .replaceWithVoid();
-//    }
-//
 //    public Uni<Void> removeAllGroup() {
 //        return this.getGroups()
 //                .map(Set::copyOf)

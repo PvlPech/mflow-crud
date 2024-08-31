@@ -157,6 +157,10 @@ public class UserResource {
         responseCode = "204",
         description = "Deletes a user"
     )
+    @APIResponse(
+        responseCode = "404",
+        description = "No user found"
+    )
     public Uni<Response> delete(@Parameter(name = "id", required = true) @PathParam("id") Long id) {
         return userService.delete(id)
                 .map(unused -> Response.noContent().build());

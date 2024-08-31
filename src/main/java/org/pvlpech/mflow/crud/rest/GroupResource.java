@@ -85,6 +85,10 @@ public class GroupResource {
         responseCode = "400",
         description = "Invalid group passed in (or no request body found)"
     )
+    @APIResponse(
+        responseCode = "404",
+        description = "No user found"
+    )
     public Uni<Response> create(
         @RequestBody(
             name = "group",
@@ -120,13 +124,22 @@ public class GroupResource {
 //                .map(updatedGroup -> Response.ok(updatedGroup).build());
 //    }
 //
-//    @DELETE
-//    @Path("{id}")
-//    public Uni<Response> delete(Long id) {
-//        return groupService.deleteGroup(id)
-//                .map(unused -> Response.noContent().build());
-//    }
-//
+    @DELETE
+    @Path("/{id}")
+    @Operation(summary = "Deletes an exiting group")
+    @APIResponse(
+        responseCode = "204",
+        description = "Deletes a group"
+    )
+    @APIResponse(
+        responseCode = "404",
+        description = "No group found"
+    )
+    public Uni<Response> delete(Long id) {
+        return groupService.deleteGroup(id)
+                .map(unused -> Response.noContent().build());
+    }
+
 //    @DELETE
 //    @Path("{id}/users/{userId}")
 //    public Uni<Response> deleteUser(Long id, Long userId) {

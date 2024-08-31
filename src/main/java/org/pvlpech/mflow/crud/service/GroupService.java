@@ -25,7 +25,6 @@ public class GroupService {
             .flatMap(g -> User.<User>findById(g.getOwner().getId())
                 .onItem().ifNull().failWith(new NotFoundException("User not found with id: " + g.getOwner().getId()))
                 .flatMap(u -> u.addServedGroup(g))
-                .flatMap(u -> u.addGroup(g))
                 .flatMap(u -> g.persist())
             );
     }
@@ -54,14 +53,16 @@ public class GroupService {
 //                .flatMap(existingGroup -> existingGroup.persist());
 //    }
 //
-//    @WithTransaction
-//    public Uni<Void> deleteGroup(Long id) {
+    @WithTransaction
+    public Uni<Void> deleteGroup(Long id) {
 //        return Group.<Group>findById(id)
 //                .onItem().ifNull().failWith(new NotFoundException("Group not found with id: " + id))
 //                .call(Group::cleanupUsers)
 //                .call(groupToBeDeleted -> groupToBeDeleted.setOwner(null))
 //                .flatMap(groupToBeDeleted -> groupToBeDeleted.delete());
-//    }
+
+    return User.deleteById(id).replaceWithVoid();
+    }
 
     @WithTransaction
     public Uni<List<Group>> getAllGroups() {

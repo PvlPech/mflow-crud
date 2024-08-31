@@ -7,6 +7,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
+import jakarta.ws.rs.NotFoundException;
 import org.pvlpech.mflow.crud.mapper.UserPartialUpdateMapper;
 import org.pvlpech.mflow.crud.model.User;
 
@@ -64,6 +65,9 @@ public class UserService {
 
     @WithTransaction
     public Uni<Void> delete(Long id) {
-        return User.deleteById(id).replaceWithVoid();
+        return User.<User>findById(id)
+            .onItem().ifNull().failWith(new NotFoundException("User not found with id: " + id))
+            .flatMap(u -> User.deleteById(id))
+            .replaceWithVoid();
     }
 }

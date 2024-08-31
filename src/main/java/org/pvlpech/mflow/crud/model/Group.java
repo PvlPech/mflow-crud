@@ -35,19 +35,18 @@ public class Group extends PanacheEntityBase {
 
     @ManyToOne()
     @JoinColumn(name = "owner_id", nullable = false)
-    @Setter(AccessLevel.NONE)
     @NotNull(message = "Owner must not be null")
     private User owner;
 
-    @ManyToMany(mappedBy = "groups")
-    @JsonIgnore
-    @Getter(AccessLevel.NONE)
-    @Setter(AccessLevel.NONE)
-    private Set<User> users = new HashSet<>();
-
-    public Uni<Set<User>> getUsers() {
-        return Mutiny.fetch(this.users);
-    }
+//    @ManyToMany(cascade = {CascadeType.ALL}, mappedBy = "groups")
+//    @JsonIgnore
+//    @Getter(AccessLevel.NONE)
+//    @Setter(AccessLevel.NONE)
+//    private Set<User> users = new HashSet<>();
+//
+//    public Uni<Set<User>> getUsers() {
+//        return Mutiny.fetch(this.users);
+//    }
 
 //    public Uni<Void> addUser(User user) {
 //        return this.getUsers()
