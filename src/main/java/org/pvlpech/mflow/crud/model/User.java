@@ -32,7 +32,7 @@ public class User extends PanacheEntityBase {
     @NotBlank(message = "Name must not be blank")
     private String name;
 
-//    @ManyToMany(cascade = {CascadeType.ALL})
+//    @ManyToMany()
 //    @JoinTable(name = "users_groups"
 //        , joinColumns = @JoinColumn(name = "user_id")
 //        , inverseJoinColumns = @JoinColumn(name = "group_id")

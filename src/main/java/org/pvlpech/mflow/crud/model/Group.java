@@ -38,7 +38,7 @@ public class Group extends PanacheEntityBase {
     @NotNull(message = "Owner must not be null")
     private User owner;
 
-//    @ManyToMany(cascade = {CascadeType.ALL}, mappedBy = "groups")
+//    @ManyToMany(mappedBy = "groups")
 //    @JsonIgnore
 //    @Getter(AccessLevel.NONE)
 //    @Setter(AccessLevel.NONE)
