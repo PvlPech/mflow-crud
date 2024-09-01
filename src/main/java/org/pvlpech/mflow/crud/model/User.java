@@ -32,17 +32,17 @@ public class User extends PanacheEntityBase {
     @NotBlank(message = "Name must not be blank")
     private String name;
 
-//    @ManyToMany()
-//    @JoinTable(name = "users_groups"
-//        , joinColumns = @JoinColumn(name = "user_id")
-//        , inverseJoinColumns = @JoinColumn(name = "group_id")
-//    )
-//    @JsonIgnore
-//    @Getter(AccessLevel.NONE)
-//    @Setter(AccessLevel.NONE)
-//    private Set<Group> groups = new HashSet<>();
-//
-    @OneToMany(cascade = {CascadeType.ALL}, orphanRemoval = true, mappedBy = "owner")
+    @ManyToMany()
+    @JoinTable(name = "users_groups"
+        , joinColumns = @JoinColumn(name = "user_id")
+        , inverseJoinColumns = @JoinColumn(name = "group_id")
+    )
+    @JsonIgnore
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
+    private Set<Group> groups = new HashSet<>();
+
+    @OneToMany(cascade = {CascadeType.ALL}, mappedBy = "owner")
     @JsonIgnore
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.NONE)
@@ -60,19 +60,19 @@ public class User extends PanacheEntityBase {
         return getClass().hashCode();
     }
 
-//    public Uni<Set<Group>> getGroups() {
-//        return Mutiny.fetch(groups);
-//    }
-//
-//    public Uni<User> addGroup(Group group) {
-//        return this.getGroups()
-//                .map(gs -> gs.add(group))
-//                .replaceWith(group)
-//                .flatMap(Group::getUsers)
-//                .map(us -> us.add(this))
-//                .replaceWith(this);
-//    }
-//
+    public Uni<Set<Group>> getGroups() {
+        return Mutiny.fetch(groups);
+    }
+
+    public Uni<User> addGroup(Group group) {
+        return this.getGroups()
+                .map(gs -> gs.add(group))
+                .replaceWith(group)
+                .flatMap(Group::getUsers)
+                .map(us -> us.add(this))
+                .replaceWith(this);
+    }
+
 //    public Uni<Void> deleteGroup(Group group) {
 //        return this.getGroups()
 //                .map(gs -> gs.remove(group))

@@ -25,6 +25,7 @@ public class GroupService {
             .flatMap(g -> User.<User>findById(g.getOwner().getId())
                 .onItem().ifNull().failWith(new NotFoundException("User not found with id: " + g.getOwner().getId()))
                 .flatMap(u -> u.addServedGroup(g))
+                .flatMap(u -> u.addGroup(g))
                 .flatMap(u -> g.persist())
             );
     }
