@@ -131,11 +131,11 @@ public class UserResource {
     )
     public Uni<Response> update(@Parameter(name = "id", required = true) @PathParam("id") Long id,
                                 @RequestBody(
-                                    name = "valid_hero",
+                                    name = "valid_user",
                                     required = true,
                                     content = @Content(
                                         schema = @Schema(implementation = User.class),
-                                        examples = @ExampleObject(name = "valid_hero", value = Examples.VALID_EXAMPLE_USER)
+                                        examples = @ExampleObject(name = "valid_user", value = Examples.VALID_EXAMPLE_USER)
                                     )
                                 )
                                 @NotNull User user) {

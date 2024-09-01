@@ -1,6 +1,8 @@
 package org.pvlpech.mflow.crud.service;
 
+import io.quarkus.hibernate.reactive.panache.Panache;
 import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
+import io.quarkus.logging.Log;
 import io.quarkus.panache.common.Sort;
 import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -8,6 +10,8 @@ import jakarta.inject.Inject;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
 import jakarta.ws.rs.NotFoundException;
+import org.hibernate.reactive.mutiny.Mutiny;
+import org.pvlpech.mflow.crud.mapper.GroupPartialUpdateMapper;
 import org.pvlpech.mflow.crud.model.Group;
 import org.pvlpech.mflow.crud.model.User;
 
@@ -19,13 +23,15 @@ public class GroupService {
     @Inject
     Validator validator;
 
+    @Inject
+    GroupPartialUpdateMapper groupPartialUpdateMapper;
+
     @WithTransaction
     public Uni<Group> create(Group group) {
         return Uni.createFrom().item(this.validate(group))
             .flatMap(g -> User.<User>findById(g.getOwner().getId())
                 .onItem().ifNull().failWith(new NotFoundException("User not found with id: " + g.getOwner().getId()))
                 .flatMap(u -> u.addServedGroup(g))
-                .flatMap(u -> u.addGroup(g))
                 .flatMap(u -> g.persist())
             );
     }
@@ -47,18 +53,23 @@ public class GroupService {
     }
 
 //    @WithTransaction
-//    public Uni<Group> update(Long id, Group updatedGroup) {
-//        return Group.<Group>findById(id)
-//                .onItem().ifNull().failWith(new NotFoundException("Group not found with id: " + id))
-//                .flatMap(existingGroup -> existingGroup.merge(updatedGroup))
-//                .flatMap(existingGroup -> existingGroup.persist());
+//    public Uni<Group> partialUpdate(Group group) {
+//        return Group.<Group>findById(group.getId())
+//            .onItem().ifNotNull().transform(u -> {
+//                this.groupPartialUpdateMapper.mapPartialUpdate(group, u);
+//                return u;
+//            })
+//            .onItem().ifNotNull().transform(this::validate);
 //    }
 //
     @WithTransaction
     public Uni<Void> deleteGroup(Long id) {
         return Group.<Group>findById(id)
             .onItem().ifNull().failWith(new NotFoundException("Group not found with id: " + id))
-            .flatMap(u -> Group.deleteById(id))
+            .flatMap(g -> Uni.createFrom().item(g.getOwner())
+                .flatMap(u -> u.deleteServedGroup(g))
+                .flatMap(u -> u.deleteGroup(g))
+                .flatMap(u-> Group.deleteById(id)))
             .replaceWithVoid();
     }
 

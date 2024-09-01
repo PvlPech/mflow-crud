@@ -23,6 +23,7 @@ import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.pvlpech.mflow.crud.model.Group;
+import org.pvlpech.mflow.crud.model.User;
 import org.pvlpech.mflow.crud.service.GroupService;
 
 import java.net.URI;
@@ -111,10 +112,45 @@ public class GroupResource {
     }
 
 //    @PATCH
-//    @Path("{id}")
-//    public Uni<Response> update(Long id, Group group) {
-//        return groupService.update(id, group)
-//                .map(updatedGroup -> Response.ok(updatedGroup).build());
+//    @Path("/{id}")
+//    @Consumes(APPLICATION_JSON)
+//    @Operation(summary = "Partially updates an exiting group")
+//    @APIResponse(
+//        responseCode = "200",
+//        description = "Updated the group",
+//        content = @Content(
+//            mediaType = APPLICATION_JSON,
+//            schema = @Schema(implementation = Group.class),
+//            examples = @ExampleObject(name = "user", value = Examples.VALID_EXAMPLE_GROUP)
+//        )
+//    )
+//    @APIResponse(
+//        responseCode = "400",
+//        description = "Null group passed in (or no request body found)"
+//    )
+//    @APIResponse(
+//        responseCode = "404",
+//        description = "No group found"
+//    )
+//    public Uni<Response> update(@Parameter(name = "id", required = true) @PathParam("id") Long id,
+//                                @RequestBody(
+//                                    name = "valid_group",
+//                                    required = true,
+//                                    content = @Content(
+//                                        schema = @Schema(implementation = User.class),
+//                                        examples = @ExampleObject(name = "valid_group", value = Examples.VALID_EXAMPLE_GROUP)
+//                                    )
+//                                )
+//                                @NotNull Group group) {
+//        if (group.getId() == null) {
+//            group.setId(id);
+//        }
+//
+//        return this.groupService.partialUpdate(group)
+//            .onItem().ifNotNull().transform(g -> Response.ok(g).build())
+//            .onItem().ifNull().continueWith(() -> Response.status(Response.Status.NOT_FOUND).build())
+//            .onFailure(ConstraintViolationException.class)
+//            .transform(cve -> new ResteasyReactiveViolationException(((ConstraintViolationException) cve).getConstraintViolations()));
 //    }
 //
 //    @PUT

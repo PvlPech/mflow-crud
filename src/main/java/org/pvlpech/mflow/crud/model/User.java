@@ -2,6 +2,7 @@ package org.pvlpech.mflow.crud.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.quarkus.hibernate.reactive.panache.PanacheEntityBase;
+import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.smallrye.mutiny.Uni;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -79,16 +80,34 @@ public class User extends PanacheEntityBase {
 
     public Uni<User> addServedGroup(Group group) {
         return this.getServedGroups()
-                .map(gs -> gs.add(group))
-                .replaceWith(this);
+            .map(gs -> gs.add(group))
+            .replaceWith(group)
+            .map(g -> {
+                if (!this.equals(g.getOwner())) {
+                    g.setOwner(this);
+                }
+                return this;
+            })
+            .flatMap(u -> u.addGroup(group));
     }
 
-//    public static Uni<User> findByName(String name) {
-//        return find("name", name).firstResult();
-//    }
-//
-//    public static Uni<Long> deleteStefs() {
-//        return delete("name", "Stef");
-//    }
+    public Uni<User> deleteServedGroup(Group group) {
+        return this.getServedGroups()
+            .map(gs -> gs.remove(group))
+            .replaceWith(group)
+            .map(g -> {
+                g.setOwner(new User()); // we can't set null as "Owner" since owner can't be null. So, it was decided to set new dummy User to support Hibernate Cache
+                return this;
+            })
+            .replaceWith(this);
+    }
 
+    public Uni<User> deleteGroup(Group group) {
+        return this.getGroups()
+            .map(gs -> gs.remove(group))
+            .replaceWith(group)
+            .flatMap(Group::getUsers)
+            .map(us -> us.remove(this))
+            .replaceWith(this);
+    }
 }
