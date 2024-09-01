@@ -73,15 +73,6 @@ public class User extends PanacheEntityBase {
                 .replaceWith(this);
     }
 
-//    public Uni<Void> deleteGroup(Group group) {
-//        return this.getGroups()
-//                .map(gs -> gs.remove(group))
-//                .replaceWith(group)
-//                .flatMap(Group::getUsers)
-//                .map(us -> us.remove(this))
-//                .replaceWithVoid();
-//    }
-//
     public Uni<Set<Group>> getServedGroups() {
         return Mutiny.fetch(servedGroups);
     }
@@ -91,26 +82,6 @@ public class User extends PanacheEntityBase {
                 .map(gs -> gs.add(group))
                 .replaceWith(this);
     }
-
-//    public Uni<Void> removeAllGroup() {
-//        return this.getGroups()
-//                .map(Set::copyOf)
-//                .flatMap(groupsCopy -> Uni.combine().all().unis(
-//                                groupsCopy.stream()
-//                                        .map(this::removeGroup)
-//                                        .collect(Collectors.toList())
-//                        ).discardItems()
-//                );
-//    }
-//
-//    public Uni<User> merge(User user) {
-//        return Uni.createFrom().item(this)
-//                .map(currentUser -> {
-//                    if (user == null) return currentUser;
-//                    currentUser.setName(user.getName() == null ? currentUser.getName() : user.getName());
-//                    return currentUser;
-//                });
-//    }
 
 //    public static Uni<User> findByName(String name) {
 //        return find("name", name).firstResult();

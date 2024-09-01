@@ -56,13 +56,10 @@ public class GroupService {
 //
     @WithTransaction
     public Uni<Void> deleteGroup(Long id) {
-//        return Group.<Group>findById(id)
-//                .onItem().ifNull().failWith(new NotFoundException("Group not found with id: " + id))
-//                .call(Group::cleanupUsers)
-//                .call(groupToBeDeleted -> groupToBeDeleted.setOwner(null))
-//                .flatMap(groupToBeDeleted -> groupToBeDeleted.delete());
-
-    return User.deleteById(id).replaceWithVoid();
+        return Group.<Group>findById(id)
+            .onItem().ifNull().failWith(new NotFoundException("Group not found with id: " + id))
+            .flatMap(u -> Group.deleteById(id))
+            .replaceWithVoid();
     }
 
     @WithTransaction
