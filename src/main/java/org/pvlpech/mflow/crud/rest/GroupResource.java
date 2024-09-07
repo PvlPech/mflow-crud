@@ -7,6 +7,7 @@ import jakarta.inject.Inject;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.groups.ConvertGroup;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.HttpHeaders;
@@ -25,6 +26,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.pvlpech.mflow.crud.model.Group;
 import org.pvlpech.mflow.crud.model.User;
 import org.pvlpech.mflow.crud.service.GroupService;
+import org.pvlpech.mflow.crud.validation.ValidationGroups;
 
 import java.net.URI;
 import java.util.List;
@@ -100,7 +102,7 @@ public class GroupResource {
                 examples = @ExampleObject(name = "valid_group", value = Examples.VALID_EXAMPLE_GROUP_TO_CREATE)
             )
         )
-        @Valid @NotNull(message = "Group must not be blank") Group group,
+        @Valid @ConvertGroup(to = ValidationGroups.Post.class) @NotNull(message = "Group must not be blank") Group group,
         @Context UriInfo uriInfo) {
         return this.groupService.create(group)
                 .onItem().ifNotNull().transform(g -> {

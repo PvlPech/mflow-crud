@@ -69,6 +69,7 @@ public class UserService {
         return User.<User>findById(id)
             .onItem().ifNull().failWith(new NotFoundException("User not found with id: " + id))
             .flatMap(User::deleteAllGroups)
+            .flatMap(User::deleteAllServedGroups)
             .flatMap(u -> User.deleteById(id))
             .replaceWithVoid();
     }

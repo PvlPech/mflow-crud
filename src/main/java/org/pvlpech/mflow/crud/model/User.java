@@ -96,10 +96,9 @@ public class User extends PanacheEntityBase {
             .map(gs -> gs.remove(group))
             .replaceWith(group)
             .map(g -> {
-                g.setOwner(new User()); // we can't set null as "Owner" since owner can't be null. So, it was decided to set new dummy User to support Hibernate Cache
+                g.setOwner(null);
                 return this;
-            })
-            .replaceWith(this);
+            });
     }
 
     public Uni<User> deleteGroup(Group group) {
@@ -117,6 +116,19 @@ public class User extends PanacheEntityBase {
             .call(g -> g.getUsers().map(us -> us.remove(this)))
             .collect().asList()
             .replaceWith(this.groups)
+            .map(gs -> {
+                gs.clear();
+                return this;
+            });
+    }
+
+    public Uni<User> deleteAllServedGroups() {
+        return this.getServedGroups()
+            .onItem().transformToMulti(Multi.createFrom()::iterable)
+            .invoke(g -> g.setOwner(null)) //TODO to think about it
+            .call(PanacheEntityBase::delete)
+            .collect().asList()
+            .replaceWith(this.servedGroups)
             .map(gs -> {
                 gs.clear();
                 return this;

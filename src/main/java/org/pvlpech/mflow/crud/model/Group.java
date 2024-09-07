@@ -12,6 +12,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.reactive.mutiny.Mutiny;
+import org.pvlpech.mflow.crud.validation.ValidationGroups;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -35,7 +36,11 @@ public class Group extends PanacheEntityBase {
 
     @ManyToOne()
     @JoinColumn(name = "owner_id", nullable = false)
-    @NotNull(message = "Owner must not be null")
+    /**
+     * We need to validate "Owner" existence only in the case of Creation (Post).
+     * During entities deletion we set "null" sometimes to support consistency.
+     */
+    @NotNull(message = "Owner must not be null", groups = ValidationGroups.Post.class)
     private User owner;
 
     @ManyToMany(mappedBy = "groups")
