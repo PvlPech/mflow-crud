@@ -49,17 +49,26 @@ public class GroupService {
 
         return group;
     }
+    @WithTransaction
+    public Uni<Group> partialUpdate(Group group) {
+        return Group.<Group>findById(group.getId())
+            .onItem().ifNotNull().transform(g -> {
+                // change the owner case start
+                if (group.getOwner() != null && !group.getOwner().equals(g.getOwner())) {
+                    g.getOwner().deleteServedGroup(g)
+                        .flatMap(u -> User.<User>findById(group.getOwner().getId()))
+                        .flatMap(u -> u.addServedGroup(g));
+                }
+                // change the owner case end
+                return g;
+            })
+            .onItem().ifNotNull().transform(g -> {
+                this.groupPartialUpdateMapper.mapPartialUpdate(group, g);
+                return g;
+            })
+            .onItem().ifNotNull().transform(this::validate);
+    }
 
-    //    @WithTransaction
-//    public Uni<Group> partialUpdate(Group group) {
-//        return Group.<Group>findById(group.getId())
-//            .onItem().ifNotNull().transform(u -> {
-//                this.groupPartialUpdateMapper.mapPartialUpdate(group, u);
-//                return u;
-//            })
-//            .onItem().ifNotNull().transform(this::validate);
-//    }
-//
     @WithTransaction
     public Uni<Void> deleteGroup(Long id) {
         return Group.<Group>findById(id)
