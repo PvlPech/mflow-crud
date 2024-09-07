@@ -40,15 +40,16 @@ public class UserService {
     @WithTransaction
     public Uni<User> partialUpdate(User user) {
         return User.<User>findById(user.getId())
-                .onItem().ifNotNull().transform(u -> {
-                    this.userPartialUpdateMapper.mapPartialUpdate(user, u);
-                    return u;
-                })
-                .onItem().ifNotNull().transform(this::validate);
+            .onItem().ifNotNull().transform(u -> {
+                this.userPartialUpdateMapper.mapPartialUpdate(user, u);
+                return u;
+            })
+            .onItem().ifNotNull().transform(this::validate);
     }
 
     /**
      * Validates a {@link User} for partial update according to annotation validation rules on the {@link User} object.
+     *
      * @param user The {@link User}
      * @return The same {@link User} that was passed in, assuming it passes validation. The return is used as a convenience so the method can be called in a functional pipeline.
      * @throws ConstraintViolationException If validation fails
@@ -67,6 +68,7 @@ public class UserService {
     public Uni<Void> delete(Long id) {
         return User.<User>findById(id)
             .onItem().ifNull().failWith(new NotFoundException("User not found with id: " + id))
+            .flatMap(User::deleteAllGroups)
             .flatMap(u -> User.deleteById(id))
             .replaceWithVoid();
     }

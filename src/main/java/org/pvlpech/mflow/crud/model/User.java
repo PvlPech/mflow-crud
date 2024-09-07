@@ -2,7 +2,7 @@ package org.pvlpech.mflow.crud.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.quarkus.hibernate.reactive.panache.PanacheEntityBase;
-import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
+import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -67,11 +67,11 @@ public class User extends PanacheEntityBase {
 
     public Uni<User> addGroup(Group group) {
         return this.getGroups()
-                .map(gs -> gs.add(group))
-                .replaceWith(group)
-                .flatMap(Group::getUsers)
-                .map(us -> us.add(this))
-                .replaceWith(this);
+            .map(gs -> gs.add(group))
+            .replaceWith(group)
+            .flatMap(Group::getUsers)
+            .map(us -> us.add(this))
+            .replaceWith(this);
     }
 
     public Uni<Set<Group>> getServedGroups() {
@@ -109,5 +109,17 @@ public class User extends PanacheEntityBase {
             .flatMap(Group::getUsers)
             .map(us -> us.remove(this))
             .replaceWith(this);
+    }
+
+    public Uni<User> deleteAllGroups() {
+        return this.getGroups()
+            .onItem().transformToMulti(Multi.createFrom()::iterable)
+            .call(g -> g.getUsers().map(us -> us.remove(this)))
+            .collect().asList()
+            .replaceWith(this.groups)
+            .map(gs -> {
+                gs.clear();
+                return this;
+            });
     }
 }

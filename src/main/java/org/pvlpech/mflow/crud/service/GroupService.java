@@ -1,8 +1,6 @@
 package org.pvlpech.mflow.crud.service;
 
-import io.quarkus.hibernate.reactive.panache.Panache;
 import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
-import io.quarkus.logging.Log;
 import io.quarkus.panache.common.Sort;
 import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -10,7 +8,6 @@ import jakarta.inject.Inject;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
 import jakarta.ws.rs.NotFoundException;
-import org.hibernate.reactive.mutiny.Mutiny;
 import org.pvlpech.mflow.crud.mapper.GroupPartialUpdateMapper;
 import org.pvlpech.mflow.crud.model.Group;
 import org.pvlpech.mflow.crud.model.User;
@@ -38,6 +35,7 @@ public class GroupService {
 
     /**
      * Validates a {@link Group} for partial update according to annotation validation rules on the {@link Group} object.
+     *
      * @param group The {@link Group}
      * @return The same {@link Group} that was passed in, assuming it passes validation. The return is used as a convenience so the method can be called in a functional pipeline.
      * @throws ConstraintViolationException If validation fails
@@ -52,7 +50,7 @@ public class GroupService {
         return group;
     }
 
-//    @WithTransaction
+    //    @WithTransaction
 //    public Uni<Group> partialUpdate(Group group) {
 //        return Group.<Group>findById(group.getId())
 //            .onItem().ifNotNull().transform(u -> {
@@ -69,7 +67,7 @@ public class GroupService {
             .flatMap(g -> Uni.createFrom().item(g.getOwner())
                 .flatMap(u -> u.deleteServedGroup(g))
                 .flatMap(u -> u.deleteGroup(g))
-                .flatMap(u-> Group.deleteById(id)))
+                .flatMap(u -> Group.deleteById(id)))
             .replaceWithVoid();
     }
 
