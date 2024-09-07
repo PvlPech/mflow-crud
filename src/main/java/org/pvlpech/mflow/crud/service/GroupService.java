@@ -57,7 +57,7 @@ public class GroupService {
                 if (group.getOwner() != null && !group.getOwner().equals(g.getOwner())) {
                     g.getOwner().deleteServedGroup(g)
                         .flatMap(u -> User.<User>findById(group.getOwner().getId()))
-                        .flatMap(u -> u.addServedGroup(g));
+                        .flatMap(u -> u.addServedGroup(group));
                 }
                 // change the owner case end
                 return g;
