@@ -132,7 +132,7 @@ public class GroupResource {
     )
     @APIResponse(
         responseCode = "404",
-        description = "No group found"
+        description = "No group/user found"
     )
     public Uni<Response> update(@Parameter(name = "id", required = true) @PathParam("id") Long id,
                                 @RequestBody(

@@ -52,15 +52,18 @@ public class GroupService {
     @WithTransaction
     public Uni<Group> partialUpdate(Group group) {
         return Group.<Group>findById(group.getId())
-            .onItem().ifNotNull().transform(g -> {
+            .onItem().ifNotNull().transformToUni(groupInDb -> {
                 // change the owner case start
-                if (group.getOwner() != null && !group.getOwner().equals(g.getOwner())) {
-                    g.getOwner().deleteServedGroup(g)
+                if (group.getOwner() != null && !group.getOwner().equals(groupInDb.getOwner())) {
+                    return groupInDb.getOwner().deleteServedGroup(groupInDb)
                         .flatMap(u -> User.<User>findById(group.getOwner().getId()))
-                        .flatMap(u -> u.addServedGroup(group));
-                }
+                        .onItem().ifNull().failWith(new NotFoundException("User not found with id: " + group.getOwner().getId()))
+                        .flatMap(u -> u.addServedGroup(groupInDb))
+                        .replaceWith(groupInDb);
                 // change the owner case end
-                return g;
+                } else {
+                    return Uni.createFrom().item(groupInDb);
+                }
             })
             .onItem().ifNotNull().transform(g -> {
                 this.groupPartialUpdateMapper.mapPartialUpdate(group, g);
