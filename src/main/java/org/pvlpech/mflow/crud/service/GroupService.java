@@ -93,23 +93,23 @@ public class GroupService {
         return Group.findById(id);
     }
 
-//    @WithTransaction
-//    public Uni<Group> addUser(Long id, Long userId) {
-//        return Group.<Group>findById(id)
-//                .onItem().ifNull().failWith(new NotFoundException("Group not found with id: " + id))
-//                .flatMap(affectedGroup -> User.<User>findById(userId)
-//                        .onItem().ifNull().failWith(new NotFoundException("User not found with id: " + userId))
-//                        .flatMap(affectedUser -> affectedUser.addGroup(affectedGroup))
-//                        .replaceWith(affectedGroup));
-//    }
-//
-//    @WithTransaction
-//    public Uni<Object> deleteUser(Long id, Long userId) {
-//        return Group.<Group>findById(id)
-//                .onItem().ifNull().failWith(new NotFoundException("Group not found with id: " + id))
-//                .flatMap(affectedGroup -> User.<User>findById(userId)
-//                        .onItem().ifNull().failWith(new NotFoundException("User not found with id: " + userId))
-//                        .call(affectedUser -> affectedUser.removeGroup(affectedGroup))
-//                        .replaceWith(affectedGroup));
-//    }
+    @WithTransaction
+    public Uni<Void> addUser(Long id, Long userId) {
+        return Group.<Group>findById(id)
+                .onItem().ifNull().failWith(new NotFoundException("Group not found with id: " + id))
+                .flatMap(g -> User.<User>findById(userId)
+                        .onItem().ifNull().failWith(new NotFoundException("User not found with id: " + userId))
+                        .flatMap(u -> u.addGroup(g))
+                        .replaceWithVoid());
+    }
+
+    @WithTransaction
+    public Uni<Void> deleteUser(Long id, Long userId) {
+        return Group.<Group>findById(id)
+                .onItem().ifNull().failWith(new NotFoundException("Group not found with id: " + id))
+                .flatMap(g -> User.<User>findById(userId)
+                        .onItem().ifNull().failWith(new NotFoundException("User not found with id: " + userId))
+                        .flatMap(u -> u.deleteGroup(g))
+                        .replaceWithVoid());
+    }
 }

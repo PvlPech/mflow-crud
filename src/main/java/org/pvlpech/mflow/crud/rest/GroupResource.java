@@ -155,13 +155,23 @@ public class GroupResource {
             .transform(cve -> new ResteasyReactiveViolationException(((ConstraintViolationException) cve).getConstraintViolations()));
     }
 
-//    @PUT
-//    @Path("{id}/users/{userId}")
-//    public Uni<Response> addUser(Long id, Long userId) {
-//        return groupService.addUser(id, userId)
-//                .map(updatedGroup -> Response.ok(updatedGroup).build());
-//    }
-//
+    @PUT
+    @Path("/{id}/users/{userId}")
+    @Operation(summary = "Add the User to the Group")
+    @APIResponse(
+        responseCode = "204",
+        description = "Added the User to the Group"
+    )
+    @APIResponse(
+        responseCode = "404",
+        description = "No group/user found"
+    )
+    public Uni<Response> addUser(@Parameter(name = "id", required = true) @PathParam("id") Long id,
+                                 @Parameter(name = "userId", required = true) @PathParam("userId") Long userId) {
+        return groupService.addUser(id, userId)
+                .map(unused -> Response.noContent().build());
+    }
+
     @DELETE
     @Path("/{id}")
     @Operation(summary = "Deletes an exiting group")
@@ -173,15 +183,24 @@ public class GroupResource {
         responseCode = "404",
         description = "No group found"
     )
-    public Uni<Response> delete(Long id) {
+    public Uni<Response> delete(@Parameter(name = "id", required = true) @PathParam("id") Long id) {
         return groupService.deleteGroup(id)
                 .map(unused -> Response.noContent().build());
     }
 
-//    @DELETE
-//    @Path("{id}/users/{userId}")
-//    public Uni<Response> deleteUser(Long id, Long userId) {
-//        return groupService.deleteUser(id, userId)
-//                .map(unused -> Response.noContent().build());
-//    }
+    @DELETE
+    @Path("/{id}/users/{userId}")
+    @Operation(summary = "Delete the User from the Group")
+    @APIResponse(
+        responseCode = "204",
+        description = "Deleted the User to the Group"
+    )
+    @APIResponse(
+        responseCode = "404",
+        description = "No group/user found"
+    )
+    public Uni<Response> deleteUser(Long id, Long userId) {
+        return groupService.deleteUser(id, userId)
+                .map(unused -> Response.noContent().build());
+    }
 }
