@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+                            http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+    <changeSet author="pvlpech" id="0.1.1-01-01" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <sequenceExists sequenceName="categories_seq"/>
+            </not>
+        </preConditions>
+        <createSequence cycle="false"
+                        incrementBy="1"
+                        sequenceName="categories_seq"
+                        startValue="1"/>
+        <rollback>
+            <dropSequence sequenceName="categories_seq"/>
+        </rollback>
+    </changeSet>
+    <changeSet author="pvlpech" id="0.1.1-01-02" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="categories"/>
+            </not>
+        </preConditions>
+        <createTable tableName="categories">
+            <column name="id" type="bigint" defaultValueComputed="nextval('categories_seq')">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="parent_id" type="bigint" />
+            <column name="group_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="categories"/>
+        </rollback>
+    </changeSet>
+    <changeSet author="pvlpech" id="0.1.1-01-03" runOnChange="true">
+        <preConditions onFail="HALT">
+            <and>
+                <tableExists tableName="groups"/>
+                <tableExists tableName="categories"/>
+                <columnExists tableName="groups"
+                              columnName="id"/>
+                <columnExists tableName="categories"
+                              columnName="group_id"/>
+                <not>
+                    <foreignKeyConstraintExists foreignKeyTableName="categories"
+                                                foreignKeyName="categories_group_id_fkey"/>
+                </not>
+            </and>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="group_id"
+                                 baseTableName="categories"
+                                 onDelete="CASCADE"
+                                 onUpdate="CASCADE"
+                                 referencedColumnNames="id"
+                                 referencedTableName="groups"
+                                 constraintName="categories_group_id_fkey"/>
+        <rollback>
+            <dropForeignKeyConstraint baseTableName="groups"
+                                      constraintName="categories_group_id_fkey"/>
+        </rollback>
+    </changeSet>
+    <changeSet author="pvlpech" id="0.1.1-01-04" runOnChange="true">
+        <preConditions onFail="HALT">
+            <and>
+                <tableExists tableName="categories"/>
+                <columnExists tableName="categories"
+                              columnName="id"/>
+                <columnExists tableName="categories"
+                              columnName="parent_id"/>
+                <not>
+                    <foreignKeyConstraintExists foreignKeyTableName="categories"
+                                                foreignKeyName="categories_parent_id_fkey"/>
+                </not>
+            </and>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="parent_id"
+                                 baseTableName="categories"
+                                 onDelete="SET NULL"
+                                 onUpdate="CASCADE"
+                                 referencedColumnNames="id"
+                                 referencedTableName="categories"
+                                 constraintName="categories_parent_id_fkey"/>
+        <rollback>
+            <dropForeignKeyConstraint baseTableName="groups"
+                                      constraintName="categories_parent_id_fkey"/>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>

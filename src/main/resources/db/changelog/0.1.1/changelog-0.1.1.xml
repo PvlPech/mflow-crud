@@ -10,4 +10,5 @@
     <include file="2024-08-02--02-create-groups-table.xml" relativeToChangelogFile="true"/>
     <include file="2024-08-02--03-create-users-groups-table.xml" relativeToChangelogFile="true"/>
     <include file="2024-08-14--01-create-currencies-table.xml" relativeToChangelogFile="true"/>
+    <include file="2024-09-09--01-create-categories-table.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>
