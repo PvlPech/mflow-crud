@@ -30,6 +30,7 @@ import org.pvlpech.mflow.crud.validation.ValidationGroups;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Set;
 
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
@@ -202,5 +203,25 @@ public class GroupResource {
     public Uni<Response> deleteUser(Long id, Long userId) {
         return groupService.deleteUser(id, userId)
                 .map(unused -> Response.noContent().build());
+    }
+
+    @GET
+    @Path("/{id}/users")
+    @Operation(summary = "Returns a users for a group with given identifier")
+    @APIResponse(
+        responseCode = "200",
+        description = "Gets a users for a group with given id",
+        content = @Content(
+            mediaType = APPLICATION_JSON,
+            schema = @Schema(implementation = User.class, type = SchemaType.ARRAY),
+            examples = @ExampleObject(name = "users", value = Examples.VALID_EXAMPLE_USER_LIST)
+        )
+    )
+    @APIResponse(
+        responseCode = "404",
+        description = "The group is not found for a given identifier"
+    )
+    public Uni<Set<User>> getUsers(@Parameter(name = "id", required = true) @PathParam("id") Long id) {
+        return groupService.getUsers(id);
     }
 }

@@ -80,7 +80,7 @@ public class UserResource {
         content = @Content(
             mediaType = APPLICATION_JSON,
             schema = @Schema(implementation = User.class, type = SchemaType.ARRAY),
-            examples = @ExampleObject(name = "heroes", value = Examples.VALID_EXAMPLE_USER_LIST)
+            examples = @ExampleObject(name = "users", value = Examples.VALID_EXAMPLE_USER_LIST)
         )
     )
     public Uni<List<User>> getAll() {

@@ -13,6 +13,7 @@ import org.pvlpech.mflow.crud.model.Group;
 import org.pvlpech.mflow.crud.model.User;
 
 import java.util.List;
+import java.util.Set;
 
 @ApplicationScoped
 public class GroupService {
@@ -106,10 +107,17 @@ public class GroupService {
     @WithTransaction
     public Uni<Void> deleteUser(Long id, Long userId) {
         return Group.<Group>findById(id)
-                .onItem().ifNull().failWith(new NotFoundException("Group not found with id: " + id))
-                .flatMap(g -> User.<User>findById(userId)
-                        .onItem().ifNull().failWith(new NotFoundException("User not found with id: " + userId))
-                        .flatMap(u -> u.deleteGroup(g))
-                        .replaceWithVoid());
+            .onItem().ifNull().failWith(new NotFoundException("Group not found with id: " + id))
+            .flatMap(g -> User.<User>findById(userId)
+                    .onItem().ifNull().failWith(new NotFoundException("User not found with id: " + userId))
+                    .flatMap(u -> u.deleteGroup(g))
+                    .replaceWithVoid());
+    }
+
+    @WithTransaction
+    public Uni<Set<User>> getUsers(Long id) {
+        return Group.<Group>findById(id)
+            .onItem().ifNull().failWith(new NotFoundException("Group not found with id: " + id))
+            .flatMap(Group::getUsers);
     }
 }
