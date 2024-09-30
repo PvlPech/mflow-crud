@@ -68,7 +68,11 @@ public class CategoryService {
             .onItem().ifNotNull().transformToUni(categoryInDb -> {
                 // change the parent case start
                 if (category.getParent() != null && !category.getParent().equals(categoryInDb.getParent())) {
-                    return categoryInDb.getParent().deleteChildrenCategory(categoryInDb)
+                    Uni<Category> uni = categoryInDb.getParent() != null
+                        ? categoryInDb.getParent().deleteChildrenCategory(categoryInDb)
+                        : Uni.createFrom().item(categoryInDb);
+
+                    return uni
                         .flatMap(с -> Category.<Category>findById(category.getParent().getId()))
                         .onItem().ifNull().failWith(new NotFoundException("Category not found with id: " + category.getParent().getId()))
                         .flatMap(c -> c.addChildrenCategory(categoryInDb))
@@ -91,6 +95,13 @@ public class CategoryService {
             .onItem().ifNull().failWith(new NotFoundException("Category not found with id: " + id))
             .flatMap(c -> Uni.createFrom().item(c.getGroup())
                 .flatMap(g -> g.deleteServedCategory(c))
+                .flatMap(g -> {
+                        if (c.getParent() != null) {
+                            return c.getParent().deleteChildrenCategory(c).replaceWith(c);
+                        }
+                        return Uni.createFrom().item(c);
+                    }
+                )
                 .flatMap(g -> c.deleteAllChildrenCategories())
                 .flatMap(g -> Category.deleteById(id)))
             .replaceWithVoid();
