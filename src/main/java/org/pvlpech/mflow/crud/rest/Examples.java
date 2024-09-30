@@ -31,7 +31,7 @@ final class Examples {
 
     static final String VALID_EXAMPLE_GROUP_TO_CREATE = """
         {
-            "name": "Taxi",
+            "name": "Family",
             "owner": {
                 "id": 1
             }
@@ -41,13 +41,29 @@ final class Examples {
     static final String VALID_EXAMPLE_GROUP = """
         {
         	"id": 1,
-            "name": "Taxi",
-            "owner": {
-              "id": 1,
-              "name": "Paul"
-            }
+            "name": "Family",
+            "owner": """ + VALID_EXAMPLE_USER + """
         }
         """;
 
     static final String VALID_EXAMPLE_GROUP_LIST = "[" + VALID_EXAMPLE_GROUP + "]";
+
+    static final String VALID_EXAMPLE_CATEGORY_TO_CREATE = """
+        {
+            "name": "Taxi",
+            "group": {
+                "id": 1
+            }
+        }
+        """;
+
+    static final String VALID_EXAMPLE_CATEGORY = """
+        {
+        	"id": 1,
+            "name": "Taxi",
+            "group": """ + VALID_EXAMPLE_GROUP + """
+        }
+        """;
+
+    static final String VALID_EXAMPLE_CATEGORY_LIST = "[" + VALID_EXAMPLE_CATEGORY + "]";
 }

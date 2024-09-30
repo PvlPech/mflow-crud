@@ -103,7 +103,7 @@ public class UserResource {
         description = "The user is not found for a given identifier"
     )
     public Uni<Response> get(@Parameter(name = "id", required = true) @PathParam("id") Long id) {
-        return this.userService.getById(id)
+        return this.userService.get(id)
                 .onItem().ifNotNull().transform(u -> Response.ok(u).build())
                 .onItem().ifNull().continueWith(() -> Response.status(Response.Status.NOT_FOUND).build());
     }

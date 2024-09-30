@@ -6,7 +6,7 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                             http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
                             http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
-    <changeSet author="pvlpech" id="0.1.1-01-01" runOnChange="true">
+    <changeSet author="pvlpech" id="0.1.1-01-21" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <sequenceExists sequenceName="categories_seq"/>
@@ -20,7 +20,7 @@
             <dropSequence sequenceName="categories_seq"/>
         </rollback>
     </changeSet>
-    <changeSet author="pvlpech" id="0.1.1-01-02" runOnChange="true">
+    <changeSet author="pvlpech" id="0.1.1-01-22" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="categories"/>
@@ -42,7 +42,7 @@
             <dropTable tableName="categories"/>
         </rollback>
     </changeSet>
-    <changeSet author="pvlpech" id="0.1.1-01-03" runOnChange="true">
+    <changeSet author="pvlpech" id="0.1.1-01-23" runOnChange="true">
         <preConditions onFail="HALT">
             <and>
                 <tableExists tableName="groups"/>
@@ -69,7 +69,7 @@
                                       constraintName="categories_group_id_fkey"/>
         </rollback>
     </changeSet>
-    <changeSet author="pvlpech" id="0.1.1-01-04" runOnChange="true">
+    <changeSet author="pvlpech" id="0.1.1-01-24" runOnChange="true">
         <preConditions onFail="HALT">
             <and>
                 <tableExists tableName="categories"/>
@@ -85,7 +85,7 @@
         </preConditions>
         <addForeignKeyConstraint baseColumnNames="parent_id"
                                  baseTableName="categories"
-                                 onDelete="SET NULL"
+                                 onDelete="CASCADE"
                                  onUpdate="CASCADE"
                                  referencedColumnNames="id"
                                  referencedTableName="categories"

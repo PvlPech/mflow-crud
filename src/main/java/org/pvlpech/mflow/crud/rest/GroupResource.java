@@ -55,7 +55,7 @@ public class GroupResource {
         )
     )
     public Uni<List<Group>> getAll() {
-        return groupService.getAllGroups();
+        return groupService.getAll();
     }
 
     @GET
@@ -73,8 +73,10 @@ public class GroupResource {
         responseCode = "404",
         description = "The group is not found for a given identifier"
     )
-    public Uni<Group> get(@Parameter(name = "id", required = true) @PathParam("id") Long id) {
-        return groupService.getGroup(id);
+    public Uni<Response> get(@Parameter(name = "id", required = true) @PathParam("id") Long id) {
+        return groupService.get(id)
+            .onItem().ifNotNull().transform(g -> Response.ok(g).build())
+            .onItem().ifNull().continueWith(() -> Response.status(Response.Status.NOT_FOUND).build());
     }
 
     @POST
@@ -124,7 +126,7 @@ public class GroupResource {
         content = @Content(
             mediaType = APPLICATION_JSON,
             schema = @Schema(implementation = Group.class),
-            examples = @ExampleObject(name = "user", value = Examples.VALID_EXAMPLE_GROUP)
+            examples = @ExampleObject(name = "group", value = Examples.VALID_EXAMPLE_GROUP)
         )
     )
     @APIResponse(
@@ -185,7 +187,7 @@ public class GroupResource {
         description = "No group found"
     )
     public Uni<Response> delete(@Parameter(name = "id", required = true) @PathParam("id") Long id) {
-        return groupService.deleteGroup(id)
+        return groupService.delete(id)
                 .map(unused -> Response.noContent().build());
     }
 

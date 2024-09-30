@@ -33,7 +33,7 @@ public class UserService {
     }
 
     @WithTransaction
-    public Uni<User> getById(Long id) {
+    public Uni<User> get(Long id) {
         return User.findById(id);
     }
 

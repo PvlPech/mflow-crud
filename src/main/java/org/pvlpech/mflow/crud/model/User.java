@@ -125,7 +125,8 @@ public class User extends PanacheEntityBase {
     public Uni<User> deleteAllServedGroups() {
         return this.getServedGroups()
             .onItem().transformToMulti(Multi.createFrom()::iterable)
-            .invoke(g -> g.setOwner(null)) //TODO to think about it
+            .invoke(g -> g.setOwner(null))
+            .invoke(Group::deleteAllServedCategories)
             .call(PanacheEntityBase::delete)
             .collect().asList()
             .replaceWith(this.servedGroups)

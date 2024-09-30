@@ -7,6 +7,7 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
@@ -43,7 +44,7 @@ public class CurrencyResource {
         )
     )
     public Uni<List<Currency>> getAll() {
-        return currencyService.getAllCurrencies();
+        return currencyService.getAll();
     }
 
     @GET
@@ -61,8 +62,10 @@ public class CurrencyResource {
         responseCode = "404",
         description = "The currency is not found for a given identifier"
     )
-    public Uni<Currency> get(@Parameter(name = "id", required = true) @PathParam("id") Long id) {
-        return currencyService.getCurrency(id);
+    public Uni<Response> get(@Parameter(name = "id", required = true) @PathParam("id") Long id) {
+        return currencyService.get(id)
+            .onItem().ifNotNull().transform(c -> Response.ok(c).build())
+            .onItem().ifNull().continueWith(() -> Response.status(Response.Status.NOT_FOUND).build());
     }
 
 }

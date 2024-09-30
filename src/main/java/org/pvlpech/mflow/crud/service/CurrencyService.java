@@ -13,13 +13,13 @@ public class CurrencyService {
 
     @CacheResult(cacheName = "all-currencies-cache")
     @WithTransaction
-    public Uni<List<Currency>> getAllCurrencies() {
+    public Uni<List<Currency>> getAll() {
         return Currency.listAll();
     }
 
     @CacheResult(cacheName = "currency-cache")
     @WithTransaction
-    public Uni<Currency> getCurrency(Long id) {
+    public Uni<Currency> get(Long id) {
         return Currency.findById(id);
     }
 

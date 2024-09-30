@@ -74,9 +74,10 @@ public class GroupService {
     }
 
     @WithTransaction
-    public Uni<Void> deleteGroup(Long id) {
+    public Uni<Void> delete(Long id) {
         return Group.<Group>findById(id)
             .onItem().ifNull().failWith(new NotFoundException("Group not found with id: " + id))
+            .flatMap(Group::deleteAllServedCategories)
             .flatMap(g -> Uni.createFrom().item(g.getOwner())
                 .flatMap(u -> u.deleteServedGroup(g))
                 .flatMap(u -> u.deleteGroup(g))
@@ -85,12 +86,12 @@ public class GroupService {
     }
 
     @WithTransaction
-    public Uni<List<Group>> getAllGroups() {
+    public Uni<List<Group>> getAll() {
         return Group.listAll(Sort.by("name"));
     }
 
     @WithTransaction
-    public Uni<Group> getGroup(Long id) {
+    public Uni<Group> get(Long id) {
         return Group.findById(id);
     }
 
