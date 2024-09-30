@@ -85,9 +85,9 @@ public class Category extends PanacheEntityBase {
             .onItem().transformToMulti(Multi.createFrom()::iterable)
             .invoke(c -> Uni.createFrom().item(c.getGroup())
                 .chain(g -> g.deleteServedCategory(c))
-                .chain(g -> c.deleteAllChildrenCategories()))
-            .invoke(c -> c.setParent(null))
-            .call(PanacheEntityBase::delete)
+                .chain(g -> c.deleteAllChildrenCategories())
+                .invoke(ct -> c.setParent(null))
+                .chain(ct -> c.delete()))
             .collect().asList()
             .replaceWith(this.childs)
             .map(cs -> {
