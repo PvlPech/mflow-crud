@@ -84,10 +84,10 @@ public class Category extends PanacheEntityBase {
         return this.getChilds()
             .onItem().transformToMulti(Multi.createFrom()::iterable)
             .invoke(c -> Uni.createFrom().item(c.getGroup())
-                .chain(g -> g.deleteServedCategory(c))
-                .chain(g -> c.deleteAllChildrenCategories())
+                .flatMap(g -> g.deleteServedCategory(c))
+                .flatMap(g -> c.deleteAllChildrenCategories())
                 .invoke(ct -> c.setParent(null))
-                .chain(ct -> c.delete()))
+                .flatMap(ct -> c.delete()))
             .collect().asList()
             .replaceWith(this.childs)
             .map(cs -> {

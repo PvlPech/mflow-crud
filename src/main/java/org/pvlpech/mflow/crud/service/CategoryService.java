@@ -90,9 +90,9 @@ public class CategoryService {
         return Category.<Category>findById(id)
             .onItem().ifNull().failWith(new NotFoundException("Category not found with id: " + id))
             .flatMap(c -> Uni.createFrom().item(c.getGroup())
-                .chain(g -> g.deleteServedCategory(c))
-                .chain(g -> c.deleteAllChildrenCategories())
-                .chain(g -> Category.deleteById(id)))
+                .flatMap(g -> g.deleteServedCategory(c))
+                .flatMap(g -> c.deleteAllChildrenCategories())
+                .flatMap(g -> Category.deleteById(id)))
             .replaceWithVoid();
     }
 
