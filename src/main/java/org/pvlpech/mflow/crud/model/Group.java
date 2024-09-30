@@ -50,7 +50,7 @@ public class Group extends PanacheEntityBase {
     @Setter(AccessLevel.NONE)
     private Set<User> users = new HashSet<>();
 
-    @OneToMany(cascade = {CascadeType.ALL}, mappedBy = "group")
+    @OneToMany(mappedBy = "group")
     @JsonIgnore
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.NONE)
@@ -76,14 +76,12 @@ public class Group extends PanacheEntityBase {
             });
     }
 
-    public Uni<Group> deleteServedCategory(Category category) {
+    public Uni<Group> deleteServedCategory(Category categoryToDelete) {
         return this.getServedCategories()
-            .map(cs -> cs.remove(category))
-            .replaceWith(category)
-            .map(c -> {
-                c.setGroup(null);
-                return this;
-            });
+            .map(servedCategories -> servedCategories.remove(categoryToDelete))
+            .replaceWith(categoryToDelete)
+            .invoke(category -> category.setGroup(null))
+            .replaceWith(this);
     }
 
     public Uni<Group> deleteAllServedCategories() {

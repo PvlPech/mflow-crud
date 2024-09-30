@@ -1,7 +1,9 @@
 package org.pvlpech.mflow.crud.service;
 
+import io.quarkus.hibernate.reactive.panache.PanacheEntityBase;
 import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.quarkus.panache.common.Sort;
+import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -93,18 +95,30 @@ public class CategoryService {
     public Uni<Void> delete(Long id) {
         return Category.<Category>findById(id)
             .onItem().ifNull().failWith(new NotFoundException("Category not found with id: " + id))
-            .flatMap(c -> Uni.createFrom().item(c.getGroup())
-                .flatMap(g -> g.deleteServedCategory(c))
-                .flatMap(g -> {
-                        if (c.getParent() != null) {
-                            return c.getParent().deleteChildrenCategory(c).replaceWith(c);
-                        }
-                        return Uni.createFrom().item(c);
-                    }
-                )
-                .flatMap(g -> c.deleteAllChildrenCategories())
-                .flatMap(g -> Category.deleteById(id)))
-            .replaceWithVoid();
+            //clean link to the owner group and vice versa
+            .flatMap(categoryToDelete -> Uni.createFrom().item(categoryToDelete.getGroup())
+                .flatMap(categoryToDeleteGroup -> categoryToDeleteGroup.deleteServedCategory(categoryToDelete))
+                .replaceWith(categoryToDelete))
+            //clean link to the parent and vice versa
+            .flatMap(categoryToDelete -> {
+                Category categoryToDeleteParent = categoryToDelete.getParent();
+                return categoryToDeleteParent != null
+                    ? categoryToDeleteParent.deleteChildrenCategory(categoryToDelete).replaceWith(categoryToDelete)
+                    : Uni.createFrom().item(categoryToDelete);
+                }
+            )
+            //delete child categories and clean link to the childs and vice versa
+            .flatMap(categoryToDelete ->
+                categoryToDelete.getChilds()
+                    .onItem().transformToMulti(Multi.createFrom()::iterable)
+                    .invoke(categoryToDeleteChild -> this.delete(categoryToDeleteChild.getId()))
+                    .collect().asList()
+                    .map(categoryToDeleteChilds -> {
+                        categoryToDeleteChilds.clear();
+                        return categoryToDelete;
+                    }))
+            //delete category
+            .flatMap(PanacheEntityBase::delete);
     }
 
     @WithTransaction
