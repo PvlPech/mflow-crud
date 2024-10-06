@@ -91,32 +91,40 @@ public class CategoryService {
             .onItem().ifNotNull().transform(this::validate);
     }
 
+    private Uni<Category> deleteGroupReference(Category category) {
+        return Uni.createFrom().item(category.getGroup())
+            .flatMap(categoryGroup -> categoryGroup.deleteServedCategory(category))
+            .replaceWith(category);
+    }
+
+    private Uni<Category> deleteParentReference(Category category) {
+        Category categoryParent = category.getParent();
+        return categoryParent != null
+            ? categoryParent.deleteChildrenCategory(category).replaceWith(category)
+            : Uni.createFrom().item(category);
+    }
+
+    private Uni<Category> deleteChilds(Category category) {
+        return category.getChilds()
+            .onItem().transformToMulti(Multi.createFrom()::iterable)
+            .invoke(categoryChild -> this.delete(categoryChild.getId()))
+            .collect().asList()
+            .map(categoryChilds -> {
+                categoryChilds.clear();
+                return category;
+            });
+    }
+
     @WithTransaction
     public Uni<Void> delete(Long id) {
         return Category.<Category>findById(id)
             .onItem().ifNull().failWith(new NotFoundException("Category not found with id: " + id))
             //clean link to the owner group and vice versa
-            .flatMap(categoryToDelete -> Uni.createFrom().item(categoryToDelete.getGroup())
-                .flatMap(categoryToDeleteGroup -> categoryToDeleteGroup.deleteServedCategory(categoryToDelete))
-                .replaceWith(categoryToDelete))
+            .flatMap(this::deleteGroupReference)
             //clean link to the parent and vice versa
-            .flatMap(categoryToDelete -> {
-                Category categoryToDeleteParent = categoryToDelete.getParent();
-                return categoryToDeleteParent != null
-                    ? categoryToDeleteParent.deleteChildrenCategory(categoryToDelete).replaceWith(categoryToDelete)
-                    : Uni.createFrom().item(categoryToDelete);
-                }
-            )
+            .flatMap(this::deleteParentReference)
             //delete child categories and clean link to the childs and vice versa
-            .flatMap(categoryToDelete ->
-                categoryToDelete.getChilds()
-                    .onItem().transformToMulti(Multi.createFrom()::iterable)
-                    .invoke(categoryToDeleteChild -> this.delete(categoryToDeleteChild.getId()))
-                    .collect().asList()
-                    .map(categoryToDeleteChilds -> {
-                        categoryToDeleteChilds.clear();
-                        return categoryToDelete;
-                    }))
+            .flatMap(this::deleteChilds)
             //delete category
             .flatMap(PanacheEntityBase::delete);
     }
