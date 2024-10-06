@@ -48,44 +48,50 @@ public class CategoryService {
         }
         return category;
     }
+
+    private Uni<Category> swapGroup(Category category, Group group) {
+        if (group != null && !group.equals(category.getGroup())) {
+            return deleteGroupReference(category)
+                .flatMap(currentCategory -> Group.<Group>findById(group.getId()))
+                .onItem().ifNull().failWith(new NotFoundException("Group not found with id: " + group.getId()))
+                .flatMap(targetGroup -> targetGroup.addServedCategory(category))
+                .replaceWith(category);
+        }
+        return Uni.createFrom().item(category);
+    }
+
+    private Uni<Category> swapParent(Category category, Category parent) {
+        if (parent != null && !parent.equals(category.getParent())) {
+            return deleteParentReference(category)
+                .flatMap(сhildCategory -> Category.<Category>findById(parent.getId()))
+                .onItem().ifNull().failWith(new NotFoundException("Category not found with id: " + parent.getId()))
+                .flatMap(parentCategory -> parentCategory.addChildrenCategory(category))
+                .replaceWith(category);
+        }
+        return Uni.createFrom().item(category);
+    }
+
     @WithTransaction
     public Uni<Category> partialUpdate(Category category) {
         return Category.<Category>findById(category.getId())
-            .onItem().ifNotNull().transformToUni(categoryInDb -> {
-                // change the group case start
-                if (category.getGroup() != null && !category.getGroup().equals(categoryInDb.getGroup())) {
-                    return categoryInDb.getGroup().deleteServedCategory(categoryInDb)
-                        .flatMap(g -> Group.<Group>findById(category.getGroup().getId()))
-                        .onItem().ifNull().failWith(new NotFoundException("Group not found with id: " + category.getGroup().getId()))
-                        .flatMap(g -> g.addServedCategory(categoryInDb))
-                        .replaceWith(categoryInDb);
-                // change the group case end
-                } else {
-                    return Uni.createFrom().item(categoryInDb);
-                }
-            })
-            .onItem().ifNotNull().transformToUni(categoryInDb -> {
-                // change the parent case start
-                if (category.getParent() != null && !category.getParent().equals(categoryInDb.getParent())) {
-                    Uni<Category> uni = categoryInDb.getParent() != null
-                        ? categoryInDb.getParent().deleteChildrenCategory(categoryInDb)
-                        : Uni.createFrom().item(categoryInDb);
-
-                    return uni
-                        .flatMap(с -> Category.<Category>findById(category.getParent().getId()))
-                        .onItem().ifNull().failWith(new NotFoundException("Category not found with id: " + category.getParent().getId()))
-                        .flatMap(c -> c.addChildrenCategory(categoryInDb))
-                        .replaceWith(categoryInDb);
-                    // change the parent case end
-                } else {
-                    return Uni.createFrom().item(categoryInDb);
-                }
-            })
-            .onItem().ifNotNull().transform(c -> {
-                this.categoryPartialUpdateMapper.mapPartialUpdate(category, c);
-                return c;
+            .onItem().ifNotNull().transformToUni(categoryInDb -> swapGroup(categoryInDb, category.getGroup()))
+            .onItem().ifNotNull().transformToUni(categoryInDb -> swapParent(categoryInDb, category.getParent()))
+            .onItem().ifNotNull().transform(categoryInDb -> {
+                this.categoryPartialUpdateMapper.mapPartialUpdate(category, categoryInDb);
+                return categoryInDb;
             })
             .onItem().ifNotNull().transform(this::validate);
+    }
+
+    private Uni<Category> deleteChilds(Category category) {
+        return category.getChilds()
+            .onItem().transformToMulti(Multi.createFrom()::iterable)
+            .invoke(categoryChild -> this.delete(categoryChild.getId()))
+            .collect().asList()
+            .map(categoryChilds -> {
+                categoryChilds.clear();
+                return category;
+            });
     }
 
     private Uni<Category> deleteGroupReference(Category category) {
@@ -101,28 +107,13 @@ public class CategoryService {
             : Uni.createFrom().item(category);
     }
 
-    private Uni<Category> deleteChilds(Category category) {
-        return category.getChilds()
-            .onItem().transformToMulti(Multi.createFrom()::iterable)
-            .invoke(categoryChild -> this.delete(categoryChild.getId()))
-            .collect().asList()
-            .map(categoryChilds -> {
-                categoryChilds.clear();
-                return category;
-            });
-    }
-
     @WithTransaction
     public Uni<Void> delete(Long id) {
         return Category.<Category>findById(id)
             .onItem().ifNull().failWith(new NotFoundException("Category not found with id: " + id))
-            //clean link to the owner group and vice versa
             .flatMap(this::deleteGroupReference)
-            //clean link to the parent and vice versa
             .flatMap(this::deleteParentReference)
-            //delete child categories and clean link to the childs and vice versa
             .flatMap(this::deleteChilds)
-            //delete category
             .flatMap(PanacheEntityBase::delete);
     }
 
