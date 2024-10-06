@@ -1,7 +1,9 @@
 package org.pvlpech.mflow.crud.service;
 
+import io.quarkus.hibernate.reactive.panache.PanacheEntityBase;
 import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.quarkus.panache.common.Sort;
+import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -11,6 +13,7 @@ import jakarta.ws.rs.NotFoundException;
 import org.pvlpech.mflow.crud.mapper.UserPartialUpdateMapper;
 import org.pvlpech.mflow.crud.model.User;
 
+import java.util.HashSet;
 import java.util.List;
 
 @ApplicationScoped
@@ -22,9 +25,13 @@ public class UserService {
     @Inject
     UserPartialUpdateMapper userPartialUpdateMapper;
 
+    @Inject
+    GroupService groupService;
+
     @WithTransaction
     public Uni<User> create(User user) {
-        return Uni.createFrom().item(this.validate(user)).flatMap(u -> u.persist());
+        return Uni.createFrom().item(this.validate(user))
+            .flatMap(userToCreate -> userToCreate.persist());
     }
 
     @WithTransaction
@@ -40,9 +47,9 @@ public class UserService {
     @WithTransaction
     public Uni<User> partialUpdate(User user) {
         return User.<User>findById(user.getId())
-            .onItem().ifNotNull().transform(u -> {
-                this.userPartialUpdateMapper.mapPartialUpdate(user, u);
-                return u;
+            .onItem().ifNotNull().transform(userInDb -> {
+                this.userPartialUpdateMapper.mapPartialUpdate(user, userInDb);
+                return userInDb;
             })
             .onItem().ifNotNull().transform(this::validate);
     }
@@ -56,21 +63,36 @@ public class UserService {
      */
     private User validate(User user) {
         var violations = this.validator.validate(user);
-
         if ((violations != null) && !violations.isEmpty()) {
             throw new ConstraintViolationException(violations);
         }
-
         return user;
+    }
+
+    private Uni<User> deleteGroupReferences(User user) {
+        return user.getGroups()
+            .map(HashSet::new) //copy of the groups set to avoid concurrent modifications
+            .onItem().transformToMulti(Multi.createFrom()::iterable)
+            .call(user::deleteGroup)
+            .collect().asList()
+            .replaceWith(user);
+    }
+
+    private Uni<User> deleteServedGroups(User user) {
+        return user.getServedGroups()
+            .map(HashSet::new) //copy of the servedGroups set to avoid concurrent modifications
+            .onItem().transformToMulti(Multi.createFrom()::iterable)
+            .call(servedGroupToDelete -> groupService.delete(servedGroupToDelete.getId()))
+            .collect().asList()
+            .replaceWith(user);
     }
 
     @WithTransaction
     public Uni<Void> delete(Long id) {
         return User.<User>findById(id)
             .onItem().ifNull().failWith(new NotFoundException("User not found with id: " + id))
-            .flatMap(User::deleteAllGroups)
-            .flatMap(User::deleteAllServedGroups)
-            .flatMap(u -> User.deleteById(id))
-            .replaceWithVoid();
+            .flatMap(this::deleteGroupReferences)
+            .flatMap(this::deleteServedGroups)
+            .flatMap(PanacheEntityBase::delete);
     }
 }

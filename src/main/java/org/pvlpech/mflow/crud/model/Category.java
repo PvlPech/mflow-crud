@@ -2,7 +2,6 @@ package org.pvlpech.mflow.crud.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.quarkus.hibernate.reactive.panache.PanacheEntityBase;
-import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -76,22 +75,6 @@ public class Category extends PanacheEntityBase {
             .replaceWith(category)
             .map(c -> {
                 c.setParent(null);
-                return this;
-            });
-    }
-
-    public Uni<Category> deleteAllChildrenCategories() {
-        return this.getChilds()
-            .onItem().transformToMulti(Multi.createFrom()::iterable)
-            .invoke(c -> Uni.createFrom().item(c.getGroup())
-                .flatMap(g -> g.deleteServedCategory(c))
-                .flatMap(g -> c.deleteAllChildrenCategories())
-                .invoke(ct -> c.setParent(null))
-                .flatMap(ct -> c.delete()))
-            .collect().asList()
-            .replaceWith(this.childs)
-            .map(cs -> {
-                cs.clear();
                 return this;
             });
     }

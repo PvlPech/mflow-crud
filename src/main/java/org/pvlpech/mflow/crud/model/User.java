@@ -2,7 +2,6 @@ package org.pvlpech.mflow.crud.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.quarkus.hibernate.reactive.panache.PanacheEntityBase;
-import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -108,31 +107,5 @@ public class User extends PanacheEntityBase {
             .flatMap(Group::getUsers)
             .map(us -> us.remove(this))
             .replaceWith(this);
-    }
-
-    public Uni<User> deleteAllGroups() {
-        return this.getGroups()
-            .onItem().transformToMulti(Multi.createFrom()::iterable)
-            .call(g -> g.getUsers().map(us -> us.remove(this)))
-            .collect().asList()
-            .replaceWith(this.groups)
-            .map(gs -> {
-                gs.clear();
-                return this;
-            });
-    }
-
-    public Uni<User> deleteAllServedGroups() {
-        return this.getServedGroups()
-            .onItem().transformToMulti(Multi.createFrom()::iterable)
-            .invoke(g -> g.setOwner(null))
-            .invoke(Group::deleteAllServedCategories)
-            .call(PanacheEntityBase::delete)
-            .collect().asList()
-            .replaceWith(this.servedGroups)
-            .map(gs -> {
-                gs.clear();
-                return this;
-            });
     }
 }
