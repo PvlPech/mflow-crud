@@ -28,11 +28,10 @@ public class CategoryService {
     @WithTransaction
     public Uni<Category> create(Category category) {
         return Uni.createFrom().item(this.validate(category))
-            .flatMap(c -> Group.<Group>findById(c.getGroup().getId())
-                .onItem().ifNull().failWith(new NotFoundException("Group not found with id: " + c.getGroup().getId()))
-                .flatMap(g -> g.addServedCategory(c))
-                .flatMap(g -> c.persist())
-            );
+            .call(categoryToCreate -> Group.<Group>findById(categoryToCreate.getGroup().getId())
+                .onItem().ifNull().failWith(new NotFoundException("Group not found with id: " + categoryToCreate.getGroup().getId()))
+                .flatMap(categoryToCreateGroup -> categoryToCreateGroup.addServedCategory(categoryToCreate)))
+            .flatMap(categoryToCreate -> categoryToCreate.persist());
     }
 
     /**
@@ -44,11 +43,9 @@ public class CategoryService {
      */
     private Category validate(Category category) {
         var violations = this.validator.validate(category);
-
         if ((violations != null) && !violations.isEmpty()) {
             throw new ConstraintViolationException(violations);
         }
-
         return category;
     }
     @WithTransaction
