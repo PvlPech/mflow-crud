@@ -65,21 +65,21 @@ public class Group extends PanacheEntityBase {
 
     public Uni<Group> addServedCategory(Category category) {
         return this.getServedCategories()
-            .map(cs -> cs.add(category))
+            .map(servedCategories -> servedCategories.add(category))
             .replaceWith(category)
-            .map(c -> {
-                if (!this.equals(c.getGroup())) {
-                    c.setGroup(this);
+            .map(servedCategoryToAdd -> {
+                if (!this.equals(servedCategoryToAdd.getGroup())) {
+                    servedCategoryToAdd.setGroup(this);
                 }
                 return this;
             });
     }
 
-    public Uni<Group> deleteServedCategory(Category categoryToDelete) {
+    public Uni<Group> deleteServedCategory(Category category) {
         return this.getServedCategories()
-            .map(servedCategories -> servedCategories.remove(categoryToDelete))
-            .replaceWith(categoryToDelete)
-            .invoke(category -> category.setGroup(null))
+            .map(servedCategories -> servedCategories.remove(category))
+            .replaceWith(category)
+            .invoke(categoryToDelete -> categoryToDelete.setGroup(null))
             .replaceWith(this);
     }
 

@@ -66,10 +66,10 @@ public class User extends PanacheEntityBase {
 
     public Uni<User> addGroup(Group group) {
         return this.getGroups()
-            .map(gs -> gs.add(group))
+            .map(groups -> groups.add(group))
             .replaceWith(group)
             .flatMap(Group::getUsers)
-            .map(us -> us.add(this))
+            .map(users -> users.add(this))
             .replaceWith(this);
     }
 
@@ -79,33 +79,33 @@ public class User extends PanacheEntityBase {
 
     public Uni<User> addServedGroup(Group group) {
         return this.getServedGroups()
-            .map(gs -> gs.add(group))
+            .map(servedGroups -> servedGroups.add(group))
             .replaceWith(group)
-            .map(g -> {
-                if (!this.equals(g.getOwner())) {
-                    g.setOwner(this);
+            .map(servedGroupToAdd -> {
+                if (!this.equals(servedGroupToAdd.getOwner())) {
+                    servedGroupToAdd.setOwner(this);
                 }
                 return this;
             })
-            .flatMap(u -> u.addGroup(group));
+            .flatMap(user -> user.addGroup(group));
     }
 
     public Uni<User> deleteServedGroup(Group group) {
         return this.getServedGroups()
-            .map(gs -> gs.remove(group))
+            .map(servedGroups -> servedGroups.remove(group))
             .replaceWith(group)
-            .map(g -> {
-                g.setOwner(null);
+            .map(servedGroupToDelete -> {
+                servedGroupToDelete.setOwner(null);
                 return this;
             });
     }
 
     public Uni<User> deleteGroup(Group group) {
         return this.getGroups()
-            .map(gs -> gs.remove(group))
+            .map(groups -> groups.remove(group))
             .replaceWith(group)
             .flatMap(Group::getUsers)
-            .map(us -> us.remove(this))
+            .map(users -> users.remove(this))
             .replaceWith(this);
     }
 }

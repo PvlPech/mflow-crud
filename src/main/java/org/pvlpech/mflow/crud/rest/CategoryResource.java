@@ -76,7 +76,7 @@ public class CategoryResource {
     )
     public Uni<Response> get(@Parameter(name = "id", required = true) @PathParam("id") Long id) {
         return categoryService.get(id)
-            .onItem().ifNotNull().transform(c -> Response.ok(c).build())
+            .onItem().ifNotNull().transform(category -> Response.ok(category).build())
             .onItem().ifNull().continueWith(() -> Response.status(Response.Status.NOT_FOUND).build());
     }
 
@@ -109,8 +109,8 @@ public class CategoryResource {
         @Valid @ConvertGroup(to = ValidationGroups.Post.class) @NotNull(message = "Category must not be blank") Category category,
         @Context UriInfo uriInfo) {
         return this.categoryService.create(category)
-                .onItem().ifNotNull().transform(g -> {
-                    var uri = uriInfo.getAbsolutePathBuilder().path(Long.toString(g.getId())).build();
+                .onItem().ifNotNull().transform(createdCategory -> {
+                    var uri = uriInfo.getAbsolutePathBuilder().path(Long.toString(createdCategory.getId())).build();
                     return Response.created(uri).build();
                 })
                 .onFailure(ConstraintViolationException.class)
@@ -153,7 +153,7 @@ public class CategoryResource {
         }
 
         return this.categoryService.partialUpdate(category)
-            .onItem().ifNotNull().transform(c -> Response.ok(c).build())
+            .onItem().ifNotNull().transform(updatedCategory -> Response.ok(updatedCategory).build())
             .onItem().ifNull().continueWith(() -> Response.status(Response.Status.NOT_FOUND).build())
             .onFailure(ConstraintViolationException.class)
             .transform(cve -> new ResteasyReactiveViolationException(((ConstraintViolationException) cve).getConstraintViolations()));

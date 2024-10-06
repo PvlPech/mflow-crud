@@ -64,7 +64,7 @@ public class CurrencyResource {
     )
     public Uni<Response> get(@Parameter(name = "id", required = true) @PathParam("id") Long id) {
         return currencyService.get(id)
-            .onItem().ifNotNull().transform(c -> Response.ok(c).build())
+            .onItem().ifNotNull().transform(currency -> Response.ok(currency).build())
             .onItem().ifNull().continueWith(() -> Response.status(Response.Status.NOT_FOUND).build());
     }
 

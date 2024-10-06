@@ -59,11 +59,11 @@ public class Category extends PanacheEntityBase {
 
     public Uni<Category> addChildrenCategory(Category category) {
         return this.getChilds()
-            .map(cs -> cs.add(category))
+            .map(childCategories -> childCategories.add(category))
             .replaceWith(category)
-            .map(c -> {
-                if (!this.equals(c.getParent())) {
-                    c.setParent(this);
+            .map(childCategoryToAdd -> {
+                if (!this.equals(childCategoryToAdd.getParent())) {
+                    childCategoryToAdd.setParent(this);
                 }
                 return this;
             });
@@ -71,10 +71,10 @@ public class Category extends PanacheEntityBase {
 
     public Uni<Category> deleteChildrenCategory(Category category) {
         return this.getChilds()
-            .map(cs -> cs.remove(category))
+            .map(childCategories -> childCategories.remove(category))
             .replaceWith(category)
-            .map(c -> {
-                c.setParent(null);
+            .map(childCategoryToDelete -> {
+                childCategoryToDelete.setParent(null);
                 return this;
             });
     }

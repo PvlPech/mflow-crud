@@ -75,7 +75,7 @@ public class GroupResource {
     )
     public Uni<Response> get(@Parameter(name = "id", required = true) @PathParam("id") Long id) {
         return groupService.get(id)
-            .onItem().ifNotNull().transform(g -> Response.ok(g).build())
+            .onItem().ifNotNull().transform(group -> Response.ok(group).build())
             .onItem().ifNull().continueWith(() -> Response.status(Response.Status.NOT_FOUND).build());
     }
 
@@ -108,8 +108,8 @@ public class GroupResource {
         @Valid @ConvertGroup(to = ValidationGroups.Post.class) @NotNull(message = "Group must not be blank") Group group,
         @Context UriInfo uriInfo) {
         return this.groupService.create(group)
-                .onItem().ifNotNull().transform(g -> {
-                    var uri = uriInfo.getAbsolutePathBuilder().path(Long.toString(g.getId())).build();
+                .onItem().ifNotNull().transform(createdGroup -> {
+                    var uri = uriInfo.getAbsolutePathBuilder().path(Long.toString(createdGroup.getId())).build();
                     return Response.created(uri).build();
                 })
                 .onFailure(ConstraintViolationException.class)
@@ -152,7 +152,7 @@ public class GroupResource {
         }
 
         return this.groupService.partialUpdate(group)
-            .onItem().ifNotNull().transform(g -> Response.ok(g).build())
+            .onItem().ifNotNull().transform(updatedGroup -> Response.ok(updatedGroup).build())
             .onItem().ifNull().continueWith(() -> Response.status(Response.Status.NOT_FOUND).build())
             .onFailure(ConstraintViolationException.class)
             .transform(cve -> new ResteasyReactiveViolationException(((ConstraintViolationException) cve).getConstraintViolations()));
